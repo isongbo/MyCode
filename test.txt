@@ -1,0 +1,18 @@
+    buf[8] = (unsigned char)(pFreqSet->iAddr>>8);
+    buf[9] = (unsigned char)(pFreqSet->iAddr);
+	buf[10] = 3;
+	buf[11] = (unsigned char)(pFreqSet->iSumCheck);
+
+/*	CString s;
+	s.Format(_T("%d %d"),buf[8],buf[9]);
+	AfxMessageBox(s);
+*/
+	g_WirelessMsgSocketServer.CloseSerialPort();
+	g_WirelessMsgSocketServer.OpenPort(1, pFreqSet->iCom, 8, 0, 1, FALSE, FALSE, FALSE, FALSE); 
+    g_WirelessMsgSocketServer.SendbufByWireLess((char*)buf,buf[2]+3);//·¢ËÍÆ±ºÅµ½½ÐºÅÆ÷
+
+    theApp.m_iSumCheck = (unsigned char)(pFreqSet->iSumCheck);
+
+
+	return 0;
+}
