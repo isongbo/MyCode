@@ -1,0 +1,91 @@
+一 MFC绘图
+与前几天课程的区别，使用MFC向导生成基本的框架。
+掌握使用类向导和快键菜单添加命令消息和窗口消息。
+1 绘图设备类介绍（纸）
+1.1 CDC类，表示的是一般的绘图设备，例如：打印机、
+    显示器等设备。
+1.2 CWindowDC类，表示的是指定的窗口。绘图的区域
+    包括客户区和非客户区。
+1.3 CClientDC类，表示的是指定的窗口。绘图的区域
+    只包括客户区。
+1.4 CPaintDC类，表示的是指定的窗口。绘图的区域
+    只包括客户区。只能在WM_PAINT的消息处理函数
+    OnPaint()中使用。
+1.5 CMetaFileDC类，与其它DC的区别最大，与文件类似
+    保存绘制代码，以便以后多次使用。
+2 绘图设备类的使用   
+2.1 CDC类的使用
+2.1.1 创建
+    virtual BOOL CreateDC(
+    LPCTSTR lpszDriverName, //设备的驱动名称
+    LPCTSTR lpszDeviceName, //设备名称
+    LPCTSTR lpszOutput, //设备接口
+    const void* lpInitData//设备的初始化参数
+    );
+    显示器：
+    CreateDC("DISPLAY",NULL,NULL,NULL);
+2.1.2 使用
+    ...
+2.1.3 删除
+    CDC::DeleteDC  
+    
+2.2 CWindowDC、CClientDC和CPaintDC的使用
+2.3 CMetaFileDC类的使用
+    2.3.1  创建        
+    CMetaFileDC::Create 
+    2.3.2 添加绘制代码(命令)
+    ...
+    2.3.3 关闭，返回句柄
+    2.3.4 重绘(参数为句柄)
+    CDC::PlayMetaFile  
+    2.3.5 删除（参数为句柄）
+    DeleteMetaFile
+               
+3 绘图对象的介绍(笔)
+3.1 CPen-画笔类
+3.2 CBrush-画刷类
+3.3 CFont-字体类
+3.4 CBitmap-位图类
+3.5 CPalette-调色板类
+    引入调色板的目的是降低位图占用的空间大小。
+    调色板的本质就是一个颜色表
+    800*600位图： 800*600*3=  字节
+
+3.6 CRgn-区域类
+4 绘图对象的使用
+4.1 CPen、CBrush和CFont的使用
+4.1.1 构造或者创建对象
+4.1.2 将对象选入绘图设备
+4.1.3 使用绘图对象
+4.1.4 恢复默认的绘图对象
+4.1.5 删除绘图对象
+4.2 CBitmap的使用
+   需要借助于一个内存DC(与当前DC兼容)
+4.2.1 定义位图对象，加载位图资源
+4.2.2 创建与当前dc兼容的兼容dc
+4.2.3 将位图选入到兼容dc
+4.2.4 将位图从兼容dc拷贝到当前dc
+4.2.5 删除兼容dc
+4.2.6 删除位图对象
+4.3 CRgn类的使用
+4.3.1 创建基本的几何区域
+    CRgn::CreateXXX
+4.3.2 将两个不同的区域进行运算（可以多次运算）
+    CRgn::CombineRgn 
+4.3.3 填充区域
+    CDC::FillRgn
+4.3.4 填充区域的边界
+    CDC::FrameRgn          
+     
+二 使用MFC的绘图类完成简单的鼠标绘图的例子
+   1 通过菜单切换图形的类型
+   2 设置绘图模式
+     CDC::SetROP2(R2_NOT); 
+  
+   
+    void
+    DrawShape(CDC* pDC,CPoint p1,CPoint p2)
+
+
+ 
+  

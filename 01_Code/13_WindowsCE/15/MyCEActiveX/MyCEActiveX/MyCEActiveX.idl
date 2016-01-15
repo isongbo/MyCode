@@ -1,0 +1,53 @@
+// MyCEActiveX.idl : ActiveX 控件项目的类型库源。
+
+// 此文件将由 MIDL 编译器工具处理以
+// 产生类型库(MyCEActiveX.tlb)，该类型库将成为以下文件中的资源:
+// MyCEActiveX.ocx 中的资源。
+
+#include <olectl.h>
+
+[ uuid(9778890F-D6D3-4CAC-8F75-C486CAA519B1), version(1.0),
+  helpfile("MyCEActiveX.hlp"),
+  helpstring("MyCEActiveX ActiveX 控件模块"),
+  control ]
+library MyCEActiveXLib
+{
+	importlib(STDOLE_TLB);
+	importlib(STDTYPE_TLB);
+
+	//  CMyCEActiveXCtrl 的主调度接口
+
+	[ uuid(8EFBAF8F-968F-48DD-A8AC-882FE457972B),
+	  helpstring("MyCEActiveX Control 的调度接口"), hidden]
+	dispinterface _DMyCEActiveX
+	{
+		properties:
+			[id(1), helpstring("属性 MsgContext")] BSTR MsgContext;
+	methods:
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+			[id(2), helpstring("方法ShowMessage")] void ShowMessage(void);
+	};
+
+	//  CMyCEActiveXCtrl 的事件调度接口
+
+	[ uuid(7245A74E-5F56-4EF0-A190-6ED517FEB601),
+	  helpstring("MyCEActiveX Control 的事件接口") ]
+	dispinterface _DMyCEActiveXEvents
+	{
+		properties:
+			//  事件接口没有任何属性
+
+		methods:
+			[id(1)] void OnMsgChange(void);
+	};
+
+	//  CMyCEActiveXCtrl 的类信息
+
+	[ uuid(EB53D4D7-35CF-4CE3-8A04-976E59EB359F),
+	  helpstring("MyCEActiveX Control"), control ]
+	coclass MyCEActiveX
+	{
+		[default] dispinterface _DMyCEActiveX;
+		[default, source] dispinterface _DMyCEActiveXEvents;
+	};
+};

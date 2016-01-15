@@ -1,0 +1,40 @@
+// CEComServer.idl : CEComServer 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(CEComServer.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "atliface.idl";
+
+[
+	object,
+	uuid(0F50BE04-1445-46EB-948D-B5283206AE49),
+	dual,
+	nonextensible,
+	helpstring("ISimple 接口"),
+	pointer_default(unique)
+]
+interface ISimple : IDispatch{
+	[id(1), helpstring("方法ShowSvrMsg")] HRESULT ShowSvrMsg(void);
+};
+[
+	uuid(5C3692C1-37B5-4988-9E70-5A9F3DE0B672),
+	version(1.0),
+	helpstring("CEComServer 1.0 类型库")
+]
+library CEComServerLib
+{
+	importlib("stdole2.tlb");
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+	[
+		uuid(A61EB607-9F7A-40B8-8872-41908F7C8DD9),
+		helpstring("Simple Class")
+	]
+	coclass Simple
+	{
+		[default] interface ISimple;
+	};
+};

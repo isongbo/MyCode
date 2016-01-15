@@ -1,0 +1,260 @@
+﻿一.作业
+      设计一个存储过程  有两个参数 
+      第一个参数代表从1加到的数  1+2+...+n
+      第二个参数用来存放前n项的和 
+
+      getNumN(10,x);    x     55
+      getNumN(100,x);  x     5050 
+
+      create  or replace  procedure  getNumN(
+          var_n number,var_sum  out   number )
+          is 
+          begin
+              var_sum:=0; 
+              for  var_i in 1..var_n  loop
+                     var_sum:=var_sum+var_i;
+              end loop;    
+          end;
+
+   declare
+          var_sum   number:=100;
+   begin
+          getNumN(10,var_sum);
+          dbms_output.put_line('var_sum='||var_sum);  
+   end;
+   
+二.函数  function 
+    2.1 函数和过程的不同点
+    关键字不同  函数是 function  过程是 procedure
+    函数有返回值类型  和 返回值 过程没有 
+    过程可以直接在plsql程序中调用  
+           函数必须组成表达式才能调用
+    2.2 语法
+    create  or replace  function   函数名(参数列表)
+         return  返回值类型
+         is
+         begin
+                 if  条件  then
+                       return   值;
+                 end  if; 
+         end;
+    2.3  举例
+    设计一个函数  传入两个整数参数  返回这两个参数的最大值
+    create  or  replace  function fun_getmax(
+       var_x in number,var_y   in  number)return number
+       is
+       begin
+           if  var_x < var_y  then
+               return  var_y;
+           end if;
+               return  var_x;      
+       end;
+ 
+     /* 调用函数  */
+     declare
+             var_res   number:=0;
+     begin
+             dbms_output.put_line(fun_getmax(100,123));
+             var_res:=fun_getmax(100,145);
+             dbms_output.put_line(var_res);  
+     end;
+  2.4 设计一个函数 传入两个整数参数   返回两个参数的最大值
+      并且把两个参数的和 存入第二个参数中。验证函数的功能。
+      create  or replace  function  getMaxAndSum(
+         var_x   in number ,var_y  in  out number)
+         return  number
+         is
+         begin   
+             if  var_x < var_y   then
+                 var_y:=var_x+var_y; 
+                 return  var_y-var_x;
+             end if;
+                 var_y:=var_x+var_y; 
+                 return   var_x;          
+         end;
+
+     create  or replace  function  getMaxAndSum(
+         var_x   in number ,var_y  in  out number)
+         return  number
+         is
+             var_temp   number;   
+         begin   
+             var_temp:=var_y;
+             var_y:=var_x+var_y;
+             if  var_x < var_temp   then
+                 return  var_temp;
+             end if;
+                 return   var_x;          
+         end;
+ 
+       /* 测试函数 */
+       declare
+           var_y     number:=1;
+           var_res  number;   
+       begin
+           var_res:=getMaxAndSum(9526,var_y);
+           dbms_output.put_line(var_res);
+           dbms_output.put_line(var_y);
+       end;
+ 三.包  package 
+     3.1 概念
+     把一组逻辑相关的数据 组织到一起的一个逻辑结构
+     3.2 系统提供的包 
+     使用包中的数据 要在数据前加包名 
+     dbms_output 
+         dbms_output.put_line('hello world');    
+     dbms_random    随机包
+         select   dbms_random.value(1,100)  from dual;
+         select   trunc(dbms_random.value(1,100))
+                from dual;
+     dbms_lob           操作lob类型的包
+     dbms_job           定时任务包 
+          可以定时调用存储过程        
+     3.3 定时调用一个存储过程 (补充)
+     dbms_job.submit(
+         job out binary_integer,
+         what   varchar2,
+         next_date   date,
+         interval      varchar2 
+         ); 
+    submit  就是把要定时调用的存储过程 提交给系统
+    系统分配的任务编号  存入 job中
+    what   定时调用的存储过程 
+    next_date    下一次调用存储过程的时间
+    interval        间隔 
+
+    dbms_job.run(job  binary_integer);
+    把定时任务是job程序 运行起来
+    dbms_job.remove(job  binary_integer);
+    删除编号为job的定时任务   
+  3.4 举例
+       1.建立一张表  test1412jobn
+          id           number   pk
+          name   
+          create   table  test1412job0(
+                  id   number  primary key,
+                  name varchar2(30)
+          ); 
+       2.为这张表建立一个序列   表名_字段名_seq
+          create  sequence   test1412job0_id_seq;
+       3.写一个存储过程 调用一次就向表中插入一条数据 
+          create or replace  procedure insert1402job
+             is
+             begin
+                  insert  into  test1412job0 values(
+                      test1412job0_id_seq.nextval,
+                      'test'||test1412job0_id_seq.currval );
+                  commit;
+             end;
+        4. 使用dbms_job 每分钟调用一次存储过程
+         declare
+                jobno    binary_integer;
+         begin
+                dbms_job.submit(jobno,'insert1402job();'
+                     ,sysdate,'sysdate+1/(24*60)');
+                dbms_output.put_line('jobno='||jobno);
+                dbms_job.run(jobno);
+         end;
+          
+       5.删除定时任务
+       select job from  user_jobs; 
+       begin
+               dbms_job.remove(121);
+       end;   
+
+  3.5  用户自定义包
+       调用包中的数据  要在数据前加包名点 
+       3.5.1 定义一个包  相当于c语言中的一个头文件
+       create   or  replace   package   mypack
+            is
+                 procedure  mpGetMax(x number,y number);
+                 function     mpGetMin(x number,y number)
+                     return number; 
+            end; 
+       3.5.2 实现一个包 相当于c语言中的实现文件 
+            create   or  replace   package  body  mypack
+            is
+                 procedure  mpGetMax(x number,y number)
+                     is
+                     begin
+                         if   x < y  then
+                            dbms_output.put_line(y);
+                         else 
+                            dbms_output.put_line(x); 
+                         end if;  
+                     end; 
+                 function     mpGetMin(x number,y number)
+                     return number
+                     is 
+                     begin
+                          if  x < y  then 
+                              return  x;
+                          end  if;
+                              return  y;    
+                     end; 
+            end; 
+     3.5.3  调用 
+     begin
+             mypack.mpGetMax(1,123); 
+             dbms_output.put_line(
+             mypack.mpGetMin(1,123)); 
+     end; 
+
+四.触发器    dml级别 trigger  
+    4.1 概念
+    在进行DML(insert  delete update) 操作时 这些操作
+           可以被数据库管理系统 捕获到。进行执行一些相应
+           的行为。
+    4.2 语法
+    create  or  replace    trigger   触发器的名字 
+       before|after   DML(insert|delete|update)
+       on  表名    |for each row 
+       declare
+       begin
+       exception
+       end;            
+  4.3  建立一张表  并为这张表建立一个更新之后的触发器
+       create  table   emp9527   as  select  id,
+          first_name  name,salary from s_emp;
+       create  or replace  trigger  emp9527_trigger
+          after  update  on  emp9527 
+          declare
+          begin
+               dbms_output.put_line('you update emp9527');
+          end;
+       update  emp9527 set salary=salary+100 
+            where  id=1; 
+       update  emp9527 set salary=salary+100 
+            where  id>1; 
+       update  emp9527 set salary=salary+100 
+            where  id<1; 
+       现在的触发器 无论sql语句影响多少行  都触发一次 
+              这种触发器叫语句级触发器。 
+       加了 for each row 之后会针对sql语句影响的每一行
+              数据都做触发,所以称之为行级触发器。
+       create  or replace  trigger  emp9527_trigger
+          after  update  on  emp9527  for each row
+          declare
+          begin 
+               dbms_output.put_line(:old.id||':'||:old.salary); 
+               dbms_output.put_line('you update emp9527');
+               dbms_output.put_line(:new.id||':'||:new.salary); 
+          end;
+       update  emp9527 set salary=salary+100 
+            where  id=1; 
+       update  emp9527 set salary=salary+100 
+            where  id>1; 
+       update  emp9527 set salary=salary+100 
+            where  id<1; 
+
+       update     :old              :new 
+       delete       :old
+       insert                            :new  
+
+      触发器中 不能出现事务控制语句。
+
+
+
+
+
+

@@ -1,0 +1,151 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: VODClient - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"../../bin/client/VODClient.res" /d "_DEBUG" /d "_AFXDLL" "D:\VODDev\SRC\VODClient\VODClient.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6A.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"../../bin/client/" /Fp"../../bin/client/VODClient.pch" /Yu"stdafx.h" /Fo"../../bin/client/" /Fd"../../bin/client/" /FD /GZ /c 
+"D:\VODDev\SRC\VODClient\ClientSocket.cpp"
+"D:\VODDev\SRC\VODClient\DlgLogin.cpp"
+"D:\VODDev\SRC\VODClient\MainFrm.cpp"
+"D:\VODDev\SRC\VODClient\thirdpart\scbarg.cpp"
+"D:\VODDev\SRC\VODClient\thirdpart\sizecbar.cpp"
+"D:\VODDev\SRC\VODClient\VODClient.cpp"
+"D:\VODDev\SRC\VODClient\VODClientDoc.cpp"
+"D:\VODDev\SRC\VODClient\VODClientView.cpp"
+"D:\VODDev\SRC\VODClient\wmpcdrom.cpp"
+"D:\VODDev\SRC\VODClient\wmpcdromcollection.cpp"
+"D:\VODDev\SRC\VODClient\wmpclosedcaption.cpp"
+"D:\VODDev\SRC\VODClient\wmpcontrols.cpp"
+"D:\VODDev\SRC\VODClient\wmpdvd.cpp"
+"D:\VODDev\SRC\VODClient\wmperror.cpp"
+"D:\VODDev\SRC\VODClient\wmperroritem.cpp"
+"D:\VODDev\SRC\VODClient\wmpmedia.cpp"
+"D:\VODDev\SRC\VODClient\wmpmediacollection.cpp"
+"D:\VODDev\SRC\VODClient\wmpnetwork.cpp"
+"D:\VODDev\SRC\VODClient\wmpplayer4.cpp"
+"D:\VODDev\SRC\VODClient\wmpplayerapplication.cpp"
+"D:\VODDev\SRC\VODClient\wmpplaylist.cpp"
+"D:\VODDev\SRC\VODClient\wmpplaylistarray.cpp"
+"D:\VODDev\SRC\VODClient\wmpplaylistcollection.cpp"
+"D:\VODDev\SRC\VODClient\wmpsettings.cpp"
+"D:\VODDev\SRC\VODClient\wmpstringcollection.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6A.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6B.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"../../bin/client/" /Fp"../../bin/client/VODClient.pch" /Yc"stdafx.h" /Fo"../../bin/client/" /Fd"../../bin/client/" /FD /GZ /c 
+"D:\VODDev\SRC\VODClient\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6B.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6C.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"../../bin/client/VODClient.pdb" /debug /machine:I386 /out:"../../bin/client/VODClient.exe" /pdbtype:sept 
+\VODDev\bin\client\ClientSocket.obj
+\VODDev\bin\client\DlgLogin.obj
+\VODDev\bin\client\MainFrm.obj
+\VODDev\bin\client\scbarg.obj
+\VODDev\bin\client\sizecbar.obj
+\VODDev\bin\client\StdAfx.obj
+\VODDev\bin\client\VODClient.obj
+\VODDev\bin\client\VODClientDoc.obj
+\VODDev\bin\client\VODClientView.obj
+\VODDev\bin\client\wmpcdrom.obj
+\VODDev\bin\client\wmpcdromcollection.obj
+\VODDev\bin\client\wmpclosedcaption.obj
+\VODDev\bin\client\wmpcontrols.obj
+\VODDev\bin\client\wmpdvd.obj
+\VODDev\bin\client\wmperror.obj
+\VODDev\bin\client\wmperroritem.obj
+\VODDev\bin\client\wmpmedia.obj
+\VODDev\bin\client\wmpmediacollection.obj
+\VODDev\bin\client\wmpnetwork.obj
+\VODDev\bin\client\wmpplayer4.obj
+\VODDev\bin\client\wmpplayerapplication.obj
+\VODDev\bin\client\wmpplaylist.obj
+\VODDev\bin\client\wmpplaylistarray.obj
+\VODDev\bin\client\wmpplaylistcollection.obj
+\VODDev\bin\client\wmpsettings.obj
+\VODDev\bin\client\wmpstringcollection.obj
+\VODDev\bin\client\VODClient.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6C.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ClientSocket.cpp
+DlgLogin.cpp
+MainFrm.cpp
+scbarg.cpp
+sizecbar.cpp
+VODClient.cpp
+VODClientDoc.cpp
+VODClientView.cpp
+wmpcdrom.cpp
+wmpcdromcollection.cpp
+wmpclosedcaption.cpp
+wmpcontrols.cpp
+wmpdvd.cpp
+wmperror.cpp
+wmperroritem.cpp
+wmpmedia.cpp
+wmpmediacollection.cpp
+wmpnetwork.cpp
+wmpplayer4.cpp
+wmpplayerapplication.cpp
+Generating Code...
+Compiling...
+wmpplaylist.cpp
+wmpplaylistarray.cpp
+wmpplaylistcollection.cpp
+wmpsettings.cpp
+wmpstringcollection.cpp
+Generating Code...
+Linking...
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6E.tmp" with contents
+[
+/nologo /o"../../bin/client/VODClient.bsc" 
+\VODDev\bin\client\StdAfx.sbr
+\VODDev\bin\client\ClientSocket.sbr
+\VODDev\bin\client\DlgLogin.sbr
+\VODDev\bin\client\MainFrm.sbr
+\VODDev\bin\client\scbarg.sbr
+\VODDev\bin\client\sizecbar.sbr
+\VODDev\bin\client\VODClient.sbr
+\VODDev\bin\client\VODClientDoc.sbr
+\VODDev\bin\client\VODClientView.sbr
+\VODDev\bin\client\wmpcdrom.sbr
+\VODDev\bin\client\wmpcdromcollection.sbr
+\VODDev\bin\client\wmpclosedcaption.sbr
+\VODDev\bin\client\wmpcontrols.sbr
+\VODDev\bin\client\wmpdvd.sbr
+\VODDev\bin\client\wmperror.sbr
+\VODDev\bin\client\wmperroritem.sbr
+\VODDev\bin\client\wmpmedia.sbr
+\VODDev\bin\client\wmpmediacollection.sbr
+\VODDev\bin\client\wmpnetwork.sbr
+\VODDev\bin\client\wmpplayer4.sbr
+\VODDev\bin\client\wmpplayerapplication.sbr
+\VODDev\bin\client\wmpplaylist.sbr
+\VODDev\bin\client\wmpplaylistarray.sbr
+\VODDev\bin\client\wmpplaylistcollection.sbr
+\VODDev\bin\client\wmpsettings.sbr
+\VODDev\bin\client\wmpstringcollection.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP6E.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+VODClient.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

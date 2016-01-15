@@ -1,0 +1,120 @@
+﻿一.异常
+    1.1 系统提供的标准异常
+  
+    1.2 自定义异常使用 
+          1.定义异常
+           根据程序中可能出现的各种问题 使用异常描述出来
+          2.抛出异常
+           根据程序中的条件  满足什么样的条件 抛出什么样
+                 的异常。
+          3.捕获异常
+            try{   }catch(异常类型& e){  }
+          4.处理异常
+二. IO
+     2.1 什么是IO 流
+     负责输入 和 输出的一种类型 
+     2.2  标准的输入 输出对象
+     cin 
+     cout    有缓冲 可以使用flush刷缓冲    可以重定向 
+     clog    规定有缓冲 实现基本和 cerr相同  
+     cerr     无缓冲  
+     
+     ./a.out  >  a.txt    ------ >  system("cmd")
+     find   /  -name  文件名  2>/dev/null 
+     如何清空一个文件?
+     cat  /dev/null > a.txt 
+    
+    2.3 c++ 中对IO进行操作的类 
+    标准输入输出:
+     istream   ostream   ----> #include <iostream> 
+    文件的输入输出:
+    ifstream  ofstream   ---->#include <fstream> 
+            fstream           
+    字符串的输入输出:
+    istringstream  ----> #include <sstream>
+    ostringstream  
+    2.4 c语言中的IO 和 c++ 语言中的IO
+     c语言中需要指定输入输出格式:
+     int  age;
+     scanf("%d",&age);
+     printf("%d\n",age);  
+     c++ 语言中自动识别格式
+     cin >> age;
+     cout  << age << endl;
+    2.5 c++ 中的非格式化输入输出
+     int get();  返回EOF
+     istream& get( char& ch );  流本身判断  流本身变成
+             0 则代表流非法 就拒绝IO  
+     ostream& put( char ch );    使用流本身 判断
+    
+     istream& getline( char* buffer, streamsize num );
+            最多读取num-1 个字符 并且把数据放入buffer 
+                   直到'\n'为止  
+     istream& getline( char* buffer, streamsize num, 
+            char delim );                                                  
+            最多读取num-1 个字符 并且把数据放入buffer 
+                   直到delim 为止
+     
+    出错之后的处理:
+    clear()     让流对象复位   
+    最多清理掉 num 个字符 直到 delim 为止 
+    istream& ignore( streamsize num=1, int delim=EOF );
+ 
+    peek()   偷看一下下一个字符 
+    putback(char  c)  回退一个字符 
+   
+    2.6 字符串IO
+    istringstream     数据来自于字符串
+    ostringstream   把数据写入字符串
+
+    +   strcat   sprintf
+    c++ 中的sring 已经可以解决大部分的字符串操作问题
+          构造函数:
+          string()
+          string(const char* s)
+          string(const string& s) 
+          重载的运算符:
+          ==   ！=   >   <     []    =   +  += 
+          成员函数:
+          c_str    size()
+   c++ string 在按格式拼接上 有缺陷 需要使用ostringstream
+          进行字符串的拼接。
+          ostringstream  无参 和 带参构造
+          运算符 有 << 就足够了   
+          把ostringstream 类型的对象转换成字符串使用 
+              str()成员函数即可
+     
+  2.7 文件的结构体为单位读写
+       ostream& write( const char* buffer, 
+              streamsize num );
+       istream& read( char* buffer, streamsize num );
+
+       gcount()  实际读取到多少字节
+  2.8 随机读写 
+       fstream   
+              seekg(大小,参考点)   调整读指针
+                      ios::beg  ios::end  ios::cur
+              seekp   调整写指针
+   
+              tellg()  获取读位置
+              tellp()  获取写位置 
+  2.9 格式化的控制 （了解）
+       cout << setfill('0') << setw(2) 
+       cout << hex  
+       cout << boolalpha 
+
+  2.10  写一个能对文件数据 简单加密的例子
+        abcdef123xyz    和一个随机的0-255之间的数异或
+        %^&4s_)_*^3
+        abcdef123xyz 
+        再对这个程序 提供解密功能  
+        filexor    a   b     这是加密
+        filexor    b   c    key     这是解密 
+
+         
+
+              
+           
+
+     
+           

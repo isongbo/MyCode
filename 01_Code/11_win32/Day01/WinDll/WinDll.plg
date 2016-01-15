@@ -1,0 +1,41 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: WinDll - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP49.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WINDLL_EXPORTS" /Fp"Debug/WinDll.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ  /c 
+"F:\Win32\Day01\WinDll\WinDll.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP49.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4A.tmp" with contents
+[
+/nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "WINDLL_EXPORTS" /Fp"Debug/WinDll.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ  /c 
+"F:\Win32\Day01\WinDll\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4A.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4B.tmp" with contents
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /incremental:yes /pdb:"Debug/WinDll.pdb" /debug /machine:I386 /out:"Debug/WinDll.dll" /implib:"Debug/WinDll.lib" /pdbtype:sept 
+.\Debug\StdAfx.obj
+.\Debug\WinDll.obj
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4B.tmp"
+<h3>Output Window</h3>
+Compiling...
+StdAfx.cpp
+Compiling...
+WinDll.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+WinDll.dll - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

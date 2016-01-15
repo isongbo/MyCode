@@ -1,0 +1,97 @@
+一 MFC的菜单
+  1 相关问题
+   WIN32 - HMENU
+   MFC - CMenu类对象
+  2 相关类
+    CMenu - 封装了关于菜单操作的各种API函数，还封装了一个非常重要
+            的成员m_hMenu(保存菜单句柄)
+  3 菜单的使用
+    3.1 添加菜单资源
+    3.2 将菜单设置到窗口
+       1）在调用框架类成员函数Create创建窗口时传参。
+       2）在处理框架窗口的WM_CREATE消息时
+          CMenu menu;
+          menu.LoadMenu //加载菜单获取菜单句柄
+                        //将menu对象和菜单句柄建立一对一绑定关系
+          CFrameWnd::SetMenu / ::SetMenu
+    3.3 命令消息（WM_COMMAND）的处理
+       ON_COMMAND( 菜单项ID, 函数名 )
+    3.4 设置菜单项状态
+       ON_WM_INITMENUPOPUP
+       ::CheckMenuItem / CMenu::CheckMenuItem
+       ::EnableMenuItem / CMenu::EnableMenuItem
+    3.5 命令消息（WM_COMMAND）处理顺序
+       Frame-->App (CFrameWnd::OnCmdMsg函数内部代码执行顺序决定)
+    3.6 右键菜单（上下文菜单）
+       ON_WM_CONTEXTMENU
+       ::GetSubMenu / CMenu::GetSubMenu - 
+                        获取某个顶层菜单项的下拉菜单
+       ::TrackPopupMenu / CMenu::TrackPopupMenu
+二 工具栏
+  1 相关类
+   CToolBarCtrl - 父类为CWnd，封装了关于工具栏控件的操作
+   CToolBar - 父类为CControlBar，封装了工具栏和框架窗口之间的关系
+              也包含工具栏的创建。
+  2 工具栏的使用
+   2.1 添加工具栏资源
+   2.2 创建工具栏  CToolBar::Create / CToolBar::CreateEx
+   2.3 加载工具栏资源 CToolBar::LoadToolBar
+   2.4 工具栏按钮被点击发出命令消息（WM_COMMAND）
+       ON_COMMAND( 工具按钮的ID, 函数名 )
+   2.5 工具栏的停靠（船坞化）
+      1）工具栏准备停靠的位置
+         CToolBar::EnableDocking
+      2）框架窗口允许停靠的位置
+         CFrameWnd::EnableDocking
+      3）框架窗口设置临时停靠的位置
+         CFrameWnd::DockControlBar
+   2.6 工具栏的显示和隐藏
+      CFrameWnd::ShowControlBar
+      void ShowControlBar( 
+        CControlBar* pBar, //被操作的工具栏对象地址
+        BOOL bShow, //TRUE - 显示  FALSE - 隐藏
+        BOOL bDelay //是否延迟操作 一般置为FALSE
+       );
+
+      CWnd::IsWindowVisible()-可以判断窗口是否处于显示/隐藏状态
+   2.7 工具栏的风格
+       CBRS_GRIPPER - 把手/夹子 风格
+       CBRS_SIZE_DYNAMIC - 工具栏变形风格
+       CBRS_TOOLTIPS - 标签提示风格
+       
+
+练习：菜单项 “工具栏”
+     1）当工具栏处于显示状态菜单项勾选，当工具栏处于隐藏状态菜单项
+        非勾选
+     2）菜单项每点击一次 工具栏的 显示/隐藏 状态 切换一次
+     3）不要增加任何变量
+三 状态栏
+  1 相关类
+   CStatusBar - 父类CControlBar，封装了关于状态栏的各种操作
+  2 状态栏使用
+   2.1 创建状态栏 CStatusBar::Create/CStatusBar::CreateEx
+   2.2 设置状态栏指示器 
+         CStatusBar::SetIndicators
+   2.3 设置指示器的宽度和风格
+         CStatusBar::SetPaneInfo
+   2.4 设置指示器的文本内容
+         CStatusBar::SetPaneText
+四 MFC的视图窗口
+  1 相关问题
+    MFC视图窗口 - 提供了一个用户显示数据的窗口，可以和进行交互操作
+  2 相关类
+    CView及其子类 - 父类CWnd，封装了关于视图窗口的各种操作
+  3 视图的使用
+
+
+
+
+
+
+
+
+
+
+
+
+

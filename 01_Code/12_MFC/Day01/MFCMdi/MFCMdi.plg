@@ -1,0 +1,57 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: MFCMdi - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/MFCMdi.res" /d "_DEBUG" /d "_AFXDLL" "F:\MFC\Day01\MFCMdi\MFCMdi.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP260.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/MFCMdi.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"F:\MFC\Day01\MFCMdi\MFCMdi.cpp"
+"F:\MFC\Day01\MFCMdi\MainFrm.cpp"
+"F:\MFC\Day01\MFCMdi\ChildFrm.cpp"
+"F:\MFC\Day01\MFCMdi\MFCMdiDoc.cpp"
+"F:\MFC\Day01\MFCMdi\MFCMdiView.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP260.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP261.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/MFCMdi.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ   /c 
+"F:\MFC\Day01\MFCMdi\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP261.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP262.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/MFCMdi.pdb" /debug /machine:I386 /out:"Debug/MFCMdi.exe" /pdbtype:sept 
+.\Debug\MFCMdi.obj
+.\Debug\StdAfx.obj
+.\Debug\MainFrm.obj
+.\Debug\ChildFrm.obj
+.\Debug\MFCMdiDoc.obj
+.\Debug\MFCMdiView.obj
+.\Debug\MFCMdi.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP262.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+MFCMdi.cpp
+MainFrm.cpp
+ChildFrm.cpp
+MFCMdiDoc.cpp
+MFCMdiView.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+MFCMdi.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

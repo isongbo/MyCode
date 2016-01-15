@@ -1,0 +1,65 @@
+一 属性页控件
+   1 相关类
+   CTabCtrl类-属性页控件类
+   2 CTabCtrl类的使用
+   2.1 插入标签
+   CTabCtrl::InsertItem
+   2.2 添加与标签对应的对话框。
+   2.3 以Tab控件为父窗口创建对话框
+   2.4 添加Tab控件的SelChange消息在消息处理函数中，设置对       话框的显示状态 
+二 属性页对话框
+  1 分类
+  标签式和向导式
+  2 相关类
+  CPropertyPage类-父类是CDialog类，页面对话框类。
+  CPropertySheet类-父类是CWnd类，表单类。
+  一个完整的属性页是由一个表单对象+多个页面对象组成。
+  3 创建标签式属性页
+  3.1 添加页面对话框资源，并生成对应的类，注意父类选择
+      CPropertyPage类。
+  3.2 添加CPropertySheet类派生类
+  3.3 将页面添加到表单
+      CPropertySheet::AddPage
+  3.4 创建和显示属性页
+      CPropertySheet::DoModal
+  3.5 将应用按钮设置为可用
+      CPropertyPage::SetModified(TRUE)
+  3.6 消息处理函数(通过添加虚函数实现)
+      CPropertyPage::OnApply
+      CPropertyPage::OnOK
+      CPropertyPage::OnCancel
+   当触发消息时，所有页面的消息处理函数都会被调用。
+  4 创建向导式属性页
+  4.1 添加页面对话框资源，并生成对应的类，注意父类选择
+      CPropertyPage类。
+  4.2 添加CPropertySheet类派生类
+  4.3 将页面添加到表单
+      CPropertySheet::AddPage 
+  4.4 设置为向导模式
+      CPropertySheet::SetWizardModel
+  4.5 创建和显示属性页
+      CPropertySheet::DoModal 
+  4.6 设置页面的向导按钮
+      4.6.1 在页面中添加虚函数OnSetActive()
+      4.6.2 获取页面的父窗口(表单)
+            GetParent()
+      4.6.3 CPropertySheet::SetWizardButtons
+  4.7 消息处理函数(通过添加虚函数实现)
+      CPropertyPage::OnWizardNext
+      CPropertyPage::OnWizardBack
+      CPropertyPage::OnWizardFinish
+      CPropertyPage::OnCancel
+   当点击向导按钮时，只有当前页面的消息处理函数被调用
+
+  
+    
+
+
+
+
+
+
+
+
+
+ 

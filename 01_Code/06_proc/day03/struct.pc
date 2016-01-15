@@ -1,0 +1,19 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+	    char userpasswd[30]="openlab/open123";
+	    struct{
+		    int   id;
+			char  name[30];
+			double salary;
+		}emp; 
+	exec sql end   declare section;
+    exec sql connect:userpasswd;
+    exec sql select  id,first_name,salary
+		into :emp  from s_emp where id=12;
+    printf("%d:%s:%lf\n",emp.id,emp.name,
+		emp.salary);
+    exec sql commit work release;
+}
+

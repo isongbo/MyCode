@@ -1,0 +1,35 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+	    char passwddb20[20]="openlab/open123";
+	    char passwddb23[20]="openlab/abc123";
+	    char passwddb26[20]="scott/tiger";
+		/* 远程数据库描述 */
+	    char db23[20]="db23";
+	    char db26[20]="db26";
+		char var_name[30];
+        /* 区分连接的标签 */
+        char lab20[20]="db20"; 
+        char lab23[20]="db23"; 
+        char lab26[20]="db26"; 
+	exec sql end   declare section;
+    exec sql connect:passwd20 at :lab20;
+	exec sql connect:passwd23 at :lab23
+	    using :db23;
+    exec sql connect:passwd26 at :lab26
+		using :db26;
+    exec sql at:lab20 select first_name 
+	    into  :var_name from s_emp where id=2;
+    printf("var_name=%s\n",var_name);
+    exec sql at:lab23 update s_emp
+		set salary=12500 where id=20;
+    exec sql at:lab23  commit;
+	exec sql at:lab26  select  first_name 
+		into :var_name from s_emp where id=5;
+	printf("var_name=%s\n",var_name);
+    exec sql at:lab20 commit work release;
+    exec sql at:lab23 commit work release;
+    exec sql at:lab26 commit work release;
+}
+

@@ -1,0 +1,65 @@
+自我介绍
+   马志国 149198978
+主要内容： 使用文档模板类创建单文档和多文档应用程序，
+           使得对象的创建统一、规范。代码更加简洁。
+一 单文档应用程序
+1 概念
+  只能管理一个文档
+2 相关类
+  CWinApp-应用程序类
+  CFrameWnd-框架窗口类
+  CView及其子类-视图类
+  CDocument-文档类
+  CDocTemplate-文档模板类，抽象基类，定义了文档模板
+  的基本功能。包括两个子类，分别是单文档模板类和
+  多文档模板类。
+  CSingleDocTemplate( 
+   UINT nIDResource,//资源ID 
+   CRuntimeClass* pDocClass,//文档的运行时类信息 
+   CRuntimeClass* pFrameClass,//框架的运行时类信息 
+   CRuntimeClass* pViewClass//视图的运行时类信息
+   );
+  应该知道：文档、框架和视图三者的对象都可以通过
+  使用单文档模板动态创建。
+  "C:\Program Files\Microsoft Visual Studio\VC98\MFC\SRC" 
+  修改工程设置为静态链接MFC后，修改断言错误！
+  当写类库程序时，你的客户是程序员时，可以使用断言
+3 创建过程
+3.1 创建单文档模板对象
+     
+3.2 将文档模板添加到应用程序
+    AddDocTemplate()
+3.3 新建文档    
+    OnFileView()
+     
+二 多文档应用程序
+1 概念
+  可以管理多个文档
+2 相关类
+  CWinApp类-应用程序类
+  CView及其子类-视图类
+  CDocument类-文档类
+  CMDIFrameWnd类-多文档的主框架类 
+  CMDIChildWnd类-多文档的子框架类
+  CMultiDocTemplate类-多文档模板类  
+  CMultiDocTemplate(
+   UINT nIDResource,//子框架对应的资源ID
+    CRuntimeClass* pDocClass,//文档类的运行时类信息 
+    CRuntimeClass* pFrameClass, //子框架类的运行时类信息
+    CRuntimeClass* pViewClass//视图类的运行时类信息
+   );
+  主框架与子框架分别拥有自己的资源(菜单和图标)  
+3 创建过程(与单文档创建过程类似)
+4 多个视图数据同步的例子
+4.1实现菜单的功能
+“新建”菜单
+ 只需在菜单的消息处理函数中，调用OnFileView(),
+  此时，文档、子框架、视图等对象都被创建了。
+"新建窗口"菜单 
+基于活动视图对应的文档，创建新的子框架和视图。
+产生的效果是一个文档对应多个视图，拥有同一个文档
+的视图的数据同步。
+   
+
+
+                    

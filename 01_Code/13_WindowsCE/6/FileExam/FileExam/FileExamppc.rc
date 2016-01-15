@@ -1,0 +1,215 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resourceppc.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(中华人民共和国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resourceppc.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\FileExamppc.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""afxres.rc""     // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\FileExam.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_FILEEXAM_DIALOG DIALOG  0, 0, 154, 146
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+CAPTION "文件操作示例"
+FONT 9, "宋体"
+BEGIN
+    LTEXT           "学生编号:",IDC_STATIC,5,6,39,8
+    LTEXT           "学生姓名:",IDC_STATIC,5,25,39,8
+    LTEXT           "学生性别:",IDC_STATIC,5,44,39,8
+    LTEXT           "出生日期:",IDC_STATIC,5,63,39,8
+    LTEXT           "班级名称:",IDC_STATIC,5,82,39,8
+    EDITTEXT        IDC_EDTXSBH,46,3,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDTXSXM,46,24,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDTCSRQ,46,61,104,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDTBJMC,46,80,104,14,ES_AUTOHSCROLL
+    COMBOBOX        IDC_CMBXSXB,46,42,104,50,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "第一个",IDC_BTNFIRST,0,102,37,14
+    PUSHBUTTON      "上一个",IDC_BTNPRIOR,37,102,37,14
+    PUSHBUTTON      "下一个",IDC_BTNNEXT,74,102,37,14
+    PUSHBUTTON      "最后一个",IDC_BTNLAST,111,102,37,14
+    PUSHBUTTON      "添加",IDC_BTNADD,0,116,37,14
+    PUSHBUTTON      "保存",IDC_BTNSAVE,111,116,37,14
+    PUSHBUTTON      "编辑",IDC_BTNEDIT,37,116,37,14
+    PUSHBUTTON      "恢复",IDC_BTNCANCEL,74,116,37,14
+    PUSHBUTTON      "删除",IDC_BTNDELETE,0,130,37,14
+END
+
+IDD_FILEEXAM_DIALOG_WIDE DIALOG  0, 0, 210, 129
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+CAPTION "FileExam"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "TODO: 在此放置对话框控件。",IDC_STATIC_1,57,49,112,23
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "FileExam.exe"
+            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "OriginalFilename", "FileExam.exe"
+            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_FILEEXAM_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 139
+    END
+
+    IDD_FILEEXAM_DIALOG_WIDE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 203
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_FILEEXAM_DIALOG DLGINIT
+BEGIN
+    IDC_CMBXSXB, 0x403, 3, 0
+0xd0c4, "\000" 
+    IDC_CMBXSXB, 0x403, 3, 0
+0xaec5, "\000" 
+    0
+END
+
+#endif    // 中文(中华人民共和国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\FileExamppc.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "afxres.rc"     // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

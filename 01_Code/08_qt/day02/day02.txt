@@ -1,0 +1,107 @@
+﻿一.如何连接带参的信号和槽
+    QSlider  对象的行为 去影响QSpinBox对象 
+    QSlider    ---->  valueChanged(int value)
+    QSpinBox ---->  setValue(int val)
+                                槽函数如果不做信号和槽的连接 可以
+                                      作为普通成员函数调用。
+    连接带参的信号和槽  需要在宏中的信号和槽函数里出现
+           参数的类型。
+二.使用c++ 方式来编写qt的代码
+    2.1 头文件 和 实现文件要分离
+    2.2 要把界面 封装成一个类 这个类要继承可视化的类
+           QWidget或者子类 QMainWindow QDialog 
+    2.3 把界面中的组件 封装成这个界面类的 成员变量
+    2.4 如果类中出现了 自定义的信号和 槽  则需要在头文件
+          中出现一个宏 叫 Q_OBJECT
+三.使用c++ 方式 完成如下代码 
+    点击一个按钮  在一个标签上 显示 当前时间 
+           
+
+四.信号和槽
+<1> 信号和槽机制是qt编程的基础，可以使互不相干的对象
+        绑定在一起
+<2> 槽可以和信号连接在一起，这样绑定之后，每当发射
+        (触发)这个信号的时候，就会自动的调用这个槽。
+<3> 如果在类中要定义信号 槽 必须声明宏 Q_OBJECT 
+<4> 定义信号   public:signals: 
+         定义槽函数 public slots:
+<5> 使用connect进行连接:
+        connect(sender,
+                SIGNAL(signal),
+                receiver,
+                SLOT(slot));
+<6>连接可以被移除
+        disconnect(lcd,SIGNAL(overflow()),
+               this,SLOT(handleMathError()));
+  补充:
+         一个信号 可以连接到多个槽 
+                connect(a,SIGNAL(siga()),b,SLOT(slotb())); 
+                connect(a,SIGNAL(siga()),c,SLOT(slotc()));
+         一个槽函数 可以连接到多个信号 
+                connect(a,SIGNAL(siga()),c,SLOT(slotc())); 
+                connect(b,SIGNAL(sigb()),c,SLOT(slotc())); 
+         一个信号 可以 连接到另一个信号 
+                connect(a,SIGNAL(siga()),b,SIGNAL(sigb())); 
+                connect(b,SIGNAL(sigb()),c,SLOT(slotc()));
+   是不是任意的信号 可以连接到任意的槽? 不是
+
+五.信号和槽连接的限制
+    5.1 信号和槽 连接时 要有相同的参数类型 和 参数顺序 
+         一般参数的个数也要相同,信号的参数可以多于槽。
+    5.2 连接带参的信号和槽时 要在SIGNAL  和 SLOT 宏中
+         的函数名中指定参数的类型。
+    5.3 如何解决 任意的信号 连接到任意的槽?
+         5.3.1 通过自定义槽函数的方式 
+         QPushButton   的信号函数  clicked()   
+                  clicked() 和自定义槽函数绑定
+                  自定义槽函数中再调用setText(QString)   
+         QLabel               的槽函数     setText(QString)
+         5.3.2 通过自定义槽函数 结合自定义信号的方式 
+          
+六 .定时器类
+     QTimer      启动这个类型的对象之后 可以周期性的发出
+                        timeout()信号
+     QTimer  *timer=new QTimer();
+     timer->setInterval(100);
+     timer->start(); 
+
+七.designer 的使用 
+    文件 --->新建文件  来创建界面文件
+    鼠标可以改变组件的位置 和 大小 
+    鼠标可以对窗口部件盒中的组件 进行拖拽 
+    通过属性编辑器 可以查看修改组件的属性
+           鼠标选中组件之后 可以使用 方向键改变组件的位置
+                  每次10px
+            ctrl+方向键 可以微调组件的位置
+            shift+方向键 可以改变组件的大小 每次 10px
+            ctrl+shift+方向键  可以微调组件的大小 每次1px
+     可以通过属性编辑器 改变文本的内容 也可以双击组件
+            改变组件的内容
+
+    对象查看器 可以 查看对象的名字 类型 以及对象和对象
+           之间的组织关系。
+
+八.如何使用 ui 文件 ?
+    1.使用uic 把 ui 文件转换成 .h 文件 
+       uic   ***.ui   -o  ***.h
+    2.写自己的头文件 使用生成.h文件
+   
+    3.写自己的实现文件 
+
+    4.写测试
+
+
+   
+    
+
+
+
+
+
+
+
+
+
+
+
+  

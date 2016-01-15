@@ -1,0 +1,71 @@
+一 MFC的各种控件
+ 1 静态控件-包括图片、静态文本和分组框。很少在代码
+   中操作该类控件，自动生成的控件的ID都是IDC_STATIC。
+   如果希望获取并操作该类控件，需要修改其ID在对话框
+   中唯一。
+ 2 按钮控件-包括一般按钮、单选按钮和复选按钮。所对应
+   的控件类都是CButton类。在一个对话框中有多个单选按
+   钮分组时，需要设置group属性。
+   获取和设置复选按钮的选中状态
+   CButton::GetCheck/SetCheck
+ 3 组合框和列表框控件
+ 3.1 组合框控件-控件类是CComboBox类。可以编辑选项也可以
+    在多个选项中选择一项。可以通过属性的方式添加选项。
+ 3.2 列表框控件-控件类是CListBox类。不支持新的选项，但是
+    可以在多个选项中选择一项或者选择多项。
+    3.2.1 获取/设置当前选项
+    CListBox::GetCurSel/SetCurSel
+    3.2.2 根据选项的索引得到文本
+    CListBox::GetText 
+    3.2.3 添加选项
+    CListBox::AddString
+    3.2.4 删除选项
+    CListBox::DeleteString
+    3.2.5 获取选项的数量
+    CListBox::GetCount 
+    3.26 清空选项
+    CListBox::ResetContent 
+ 4 动画控件
+   控件类是CAnimateCtrl类。
+ 5 综合的一个播放动画的例子
+ 5.1 文件对话框
+     对应的类CFileDialog类
+ 5.1.1 构造函数
+ CFileDialog( 
+   BOOL bOpenFileDialog,//TRUE:打开；FALSE:另存为。 
+   LPCTSTR lpszDefExt = NULL, //在另存为中表示默认的扩展名
+   LPCTSTR lpszFileName = NULL, //在另存为中表示默认的文件名称
+   DWORD dwFlags = OFN_OVERWRITEPROMPT,//窗口的样式
+   LPCTSTR lpszFilter = NULL,//设置文件类型的字符串 
+   CWnd* pParentWnd = NULL//父窗口
+   );
+   文件类型的字符串:
+   "视频文件(*.avi)|*.avi|所有文件(*.*)|*.*||"; 
+二 旋转按钮、进度条和滑块
+  1 旋转按钮-控件类是CSpinButtonCtrl类
+  1.1 设置/获取数值范围
+      SetRange32/GetRange32
+  1.2 设置/获取控件的增量
+      SetAccel/GetAccel    
+  1.3 设置/获取位置(当前的数值)
+      SetPos/GetPos      
+  2 进度条-控件类是CProgressCtrl类
+  2.1 设置/获取数值范围
+      SetRange32/GetRange32
+  2.2 设置/获取控件的步长
+      SetStep/GetStep  
+  2.3 前进一个步长
+      StepIt
+  2.4 设置/获取位置
+      SetPos/GetPos          
+  3 滑块-控件类是CSliderCtrl类
+  3.1 设置/获取数值范围
+      SetRange/GetRange
+      
+
+  
+   
+      
+
+ 
+     

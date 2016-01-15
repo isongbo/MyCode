@@ -1,0 +1,353 @@
+复习：
+1.文件操作的相关函数
+1.1 fcntl函数
+(1)F_SETLK - 加锁/解锁
+   给指定的文件进行加锁，都写锁，一个读锁和一个写锁，读锁是一把共享锁，允许其他进程加读锁，不允许加写锁;写锁是一把互斥锁，加完写锁之后不允许其他进程加读锁/写锁
+
+注意：
+   (1) 文件锁并不能直接去锁定文件的读写
+   (2) 在读操作可以尝试着加读锁，如果能加则进行读取，
+      在写操作之前尝试着加写锁，如果能加再去写
+
+(2)F_SETLKW
+   表示尝试着去加锁，如果加不上则等待，直到文件上的锁释放之后再进行加锁
+
+(3)F_GETLK 
+   主要用于测试锁是否可以加上，如果能加则不加，而是将锁类型改为F_UNLCK,如果不能加，就会将文件中的现有锁信息返回出来，l_pid保存的是加锁的进程号
+
+1.2 stat()/fstat()
+    主要用于获取文件的状态大小等信息
+    struct stat{ st_size; 文件的大小};
+1.3 access()函数
+    主要用于判断文件是否存在，以及文件的权限
+1.4 chmod()函数
+    主要用于修改文件的权限
+1.5 truncate()函数
+    主要用于修改文件的大小
+1.6 umask()函数
+   主要用于设置文件的创建权限屏蔽字
+1.7 mmap()/munmap()函数
+1.8 其他函数
+   link()   unlink()   remove()  rename()
+-------------------------------------------------------
+今天内容：
+   (1)目录操作的函数
+   (2)进程以及多进程
+
+1.目录操作的函数
+1.1 mkdir函数
+   #include <sys/stat.h>
+   #include <sys/types.h>
+   int mkdir(const char *pathname, mode_t mode);
+第一个参数：目录的路径以及目录名称
+第二个参数：目录的权限
+返回值：成功返回0，失败返回-1
+函数功能：创建一个目录
+
+1.2 rmdir函数
+   #include <unistd.h>
+   int rmdir(const char *pathname);
+函数功能：
+   表示按照参数指定的路径删除对应的目录
+
+1.3 chdir函数
+   #include <unistd.h>
+   int chdir(const char *path);
+函数功能：
+   表示按照参数指定的路径进行切换
+
+1.4 opendir函数
+   #include <sys/types.h>
+   #include <dirent.h>
+   DIR *opendir(const char *name);
+函数功能：
+    表示按照参数指定的目录进行打开操作，如果打开成功则
+    返回目录的首地址,如果打开失败则返回NULL
+
+1.5 readdir函数
+   #include <dirent.h>
+   struct dirent *readdir(DIR *dirp);
+函数功能：
+    按照参数指定的目录进行读取,成功返回读取到的文件信
+    息，失败返回NULL
+
+struct dirent 
+{
+    ino_t  d_ino;/* i节点的编号*/
+    off_t  d_off;/*偏移量*/
+    unsigned short d_reclen;/*当前记录的大小*/
+    unsigned char  d_type;/*文件的类型*/
+    char d_name[256]; /*文件名称*/
+};
+注意：
+   关注后成员即可
+
+1.6 getcwd函数
+   #include <unistd.h>
+   char *getcwd(char *buf, size_t size);
+函数功能：
+    获取当前进程的工作目录，可以用参数带出结果，也可以
+    通过返回值返回 
+
+如：
+    int* fn(void)
+    {
+	int* pi = malloc(sizeof(int));
+        return pi;
+    }
+    int* pj = fn();
+
+2.进程和多进程
+2.1 基本概念和命令
+   程序是指硬盘上的文件，运行在内存中的程序叫做进程
+   ps  显示当前终端中的进程
+如：
+   PID - 进程号
+   TTY - 终端号
+   TIME - 消耗CPU的时间
+   CMD - 具体的进程名称
+
+   ps -aux  表示显示所有包含其他使用者的进程
+如：
+   USER - 进程的属主
+   PID  - 进程号
+   STAT - 进程的状态
+   CMD  - 进程名称
+   
+   ps -ef   表示以全格式的方式显示所有的进程
+如:
+   UID - 用户id
+   PID - 进程号
+   PPID - 父进程号
+   CMD - 进程名称
+
+注意：
+   (1)主流的操作系统都是支持多进程的，如果一个进程A启动了进程B，那么把进程A叫做进程B的父进程，进程B叫做进程A的子进程
+   (2)一般而言，进程0都是系统内部的进程，负责启动进程1和进程2，其他的进程都是由1和2直接或者间接启动起来
+  
+   kill -9 进程号  表示杀死指定的进程
+
+2.2 相关的函数
+(1)获取进程号等函数
+   #include <sys/types.h>
+   #include <unistd.h>
+   getpid() - 获取进程id
+   getppid() - 获取父进程id
+   getuid() - 获取用户id
+   getgid() - 获取组id
+
+(2)fork函数
+    #include <unistd.h>
+    pid_t fork(void);
+函数的功能：
+    表示用复制当前进程的方式去创建一个新的进程，成功子
+    进程返回0，父进程返回子进程的PID，失败返回-1
+
+结论：
+   fork函数用于创建子进程，代码的执行方式是：
+a.fork之前的代码，父进程执行一次
+b.fork之后的代码，父子进程各自执行一次
+c.fork函数的返回值，父子进程分别返回一次
+   子进程返回0，父进程返回子进程的id
+
+注意：
+   (1)父子进程不一定谁先执行,取决于操作系统
+   (2)创建的子进程会复制父进程中除了代码区之外的其他内存区域，代码区和父进程共用
+
+父子进程之间的关系：
+   (1)父进程启动了子进程，父子进程同时启动，如果子进程先结束，那么会给父进程发信号，父进程负责回收子进程的资源
+   (2)如果父进程先结束，子进程变成了孤儿进程，子进程会变更父进程(一般重新指定init(1)为新的父进程),init进程也叫做孤儿院
+   (3)如果子进程先结束，但是由于各种原因父进程都没有收到子进程发来的信号，无法回收子进程的资源，此时子进程叫做僵尸进程
+
+2.3 进程的终止
+进程的终止方式分为以下两种：
+(1)正常终止
+   a.在main函数中执行了return
+   b.调用exit函数
+   c.调用_Exit()/_exit()函数
+   d.最后一个线程返回
+   e.最后一个线程调用了pthread_exit()函数
+
+(2)非正常终止
+   a.信号终止进程
+   b.最后一个线程被其他线程取消
+
+2.4 终止函数的介绍
+   #include <unistd.h>
+   void _exit(int status);
+   #include <stdlib.h>
+   void _Exit(int status);  
+函数的功能：
+    表示立即终止正在运行的程序，不同的是分别为UC和标C
+    函数
+  
+   #include <stdlib.h>
+   void exit(int status);
+函数的功能：
+   表示终止正在运行的程序，参数为退出码，所不同的是推
+   出之前调用atexit函数
+
+   #include <stdlib.h>
+   int atexit(void (*function)(void));
+函数的功能：
+    表示根据参数指定的函数进行调用
+
+问题:
+    printf("1\n");  //父进程
+    fork();         //父进程  +  子进程
+    printf("2\n");
+    fork();         //父进程 + 2个子进程 + 1个孙进程
+    printf("3\n");
+运行结果：
+    1   2  2   3  3  3  3  -> 顺序不确定
+提问：
+    要求有一个父进程 + 2个子进程  
+    pid_t pid = fork()   父进程 + 子进程
+    if(0 != pid) //父进程
+    {
+        fork();
+    }
+扩展：
+    while(1) 
+    {
+         fork();  
+    } => 比较危险
+
+2.5 进程的等待
+(1)wait函数
+    #include <sys/types.h>
+    #include <sys/wait.h>
+    pid_t wait(int *status);
+函数的功能：
+    等待进程的状态发生改变，主要用于等待进程结束，参数
+    用于将进程结束的退出码带出来,成功返回结束的子进程
+    pid,失败返回-1
+
+    WIFEXITED(status) - 判断子进程是否正常结束
+    WEXITSTATUS(status) - 获取子进程的退出码
+注意：
+    wait(&status) <=> waitpid(-1,&status,0);      
+
+(2)waitpid函数
+   pid_t waitpid(pid_t pid, int *status, int options);
+第一个参数：进程号
+    < -1 表示等待组id为pid绝对值的任何一个进程(了解)
+    -1   表示等待任何一个子进程
+    0    表示等待和正在执行的进程组id相同的任何一个子
+         进程(了解)
+    >0   表示等待进程号为pid的子进程
+
+第二个参数：返回结束进程的退出码
+第三个参数：等待方式，一般默认给0即可
+返回值：成功返回等待进程id,失败返回-1
+函数的功能：等待指定的进程结束
+
+复习：
+    int max(int i,int j,int* pi)
+    {
+         //int* pi = &res;
+         // *pi = *(&res) = res;
+         *pi = i>j?i:j;
+         return 0; 
+    }
+
+    #include "max.h"
+    int max(int i,int j,int* pi);
+
+    int res = 0;
+    max(10,20,&res);
+    printf("res = %d\n",res);
+
+(3)工作方式
+   a.调用wait()/waitpid()函数后，父进程开始等待子进程的结束，而父进程自身进入阻塞
+   b.如果该父进程没有子进程，则父进程立即返回
+   c.如果没有已经结束的子进程，父进程保持阻塞，直到有一个符合要求的子进程结束位置
+   d.如果有结束的子进程，父进程会获取到子进程的结束状态码(return 或者 exit(参数))并且返回
+
+明日预报：
+   (1)多进程的使用
+   (2)信号以及信号的处理
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+   
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
+     

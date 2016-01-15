@@ -1,0 +1,51 @@
+// ConnectionCom.idl : ConnectionCom 的 IDL 源
+//
+
+// 此文件将由 MIDL 工具处理以
+// 产生类型库(ConnectionCom.tlb)和封送处理代码。
+
+import "oaidl.idl";
+import "ocidl.idl";
+import "atliface.idl";
+
+[
+	object,
+	uuid(7C20780D-056A-4B4C-A0CB-0E110F5C68CF),
+	dual,
+	nonextensible,
+	helpstring("IAdd 接口"),
+	pointer_default(unique)
+]
+interface IAdd : IDispatch{
+	[id(1), helpstring("方法Add")] HRESULT Add([in] LONG a, [in] LONG b);
+};
+[
+	uuid(6C01534B-653C-435B-8A8A-C26BC77DA65F),
+	version(1.0),
+	helpstring("ConnectionCom 1.0 类型库")
+]
+library ConnectionComLib
+{
+	importlib("stdole2.tlb");
+	interface IDocHostUIHandlerDispatch;
+	interface IAxWinAmbientDispatchEx;
+	[
+		uuid(6D98CC76-F53F-4DC3-A0F1-6915150BEFED),
+		helpstring("_IAddEvents 接口")
+	]
+	dispinterface _IAddEvents
+	{
+		properties:
+		methods:
+			[id(1), helpstring("方法ExecutionOver")] HRESULT ExecutionOver([in] LONG lResult);
+	};
+	[
+		uuid(16753E3A-3279-4704-A05B-44DAA94A5C9C),
+		helpstring("Add Class")
+	]
+	coclass Add
+	{
+		[default] interface IAdd;
+		[default, source] dispinterface _IAddEvents;
+	};
+};

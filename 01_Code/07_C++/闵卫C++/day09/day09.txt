@@ -1,0 +1,89 @@
+一、异常
+int f1 (void) { ... }
+int f2 (void) {
+    ...;
+    if (f1 () == -1)
+        return -1;
+    ...;
+    return 0;
+}
+int f3 (void) {
+    ...;
+    if (f2 () == -1)
+        return -1;
+    ...;
+    return 0;
+}
+int main (void) {
+    ...;
+    if (f3 () == -1)
+        return -1;
+    ...;
+    return 0;
+}
+1.抛出异常：throw 异常对象;
+异常对象：基本类型的变量或者类类型的对象。
+throw 100;
+throw "内存分配失败";
+throw MemoryEerror ();
+2.捕获异常
+try {
+   可能引发异常的操作;
+}
+catch (异常类型1& 异常对象引用) {
+   对异常类型1的处理;
+}
+catch (异常类型2& 异常对象引用) {
+   对异常类型2的处理;
+}
+...
+catch (...) {
+   对其它异常的处理;
+}
+3.异常流程
+1)当代码执行到throw语句时，一方面会将所抛出的异常对象复制到系统安全区中，另一方面将流程执行到包含此throw语句的最小作用域的右花括号处，并沿着函数调用的路径，向上回溯，直到try块的右花括号处。然会根据异常对象的类型匹配一个适当的catch分支，执行其中的异常处理代码。
+2)如果一个被抛出的异常没有被任何代码捕获，最终将被系统捕获，并终止进程，同时打印异常的类型信息。
+3)如果一个函数没有捕获它所引发的异常，那么该异常将继续向上抛出。直到调用路径中的某个函数捕获了该异常。
+4.异常说明
+throw (异常类型1, 异常类型2, ...)
+1)在声明函数时，可以通过异常说明，声明该函数所可能抛出的异常。该函数可以抛出异常说明以外的异常，但这些异常不能被其调用者捕获。
+5.构造函数中的异常
+1)在构造函数中可以抛出异常，表示在构造过程中出现的错误。
+2)如果一个对象在构造过程中出现了异常，那么这个对象就会被不完整构造，而一个不完整构造的对象，它的析构函数永远不会被执行。
+6.析构函数中的异常
+析构函数中不要抛出异常，对可以引发异常的操作，尽量在内部捕获，不要使之被抛到析构函数外部。
+7.标准库异常
+#include <stdexcept>
+exception : const char* what (void) const throw () = 0;
+--> overflow_error - 上溢异常
+--> underflow_error - 下溢异常
+--> invalid_argument - 无效参数异常
+--> out_of_range - 越界异常
+--> bad_alloc - 内存分配失败(new)
+--> bad_cast - 动态类型转换失败(引用)
+--> bad_type_id - 非法类型
+二、I/O流
+ifstream - 输入文件流，从文件读取
+ofstream - 输出文件流，向文件写入
+fstream - 输入输出文件流，既可读也可写
+打开->读/写/跳->关闭
+operator bool (void) {}
+istream& istream::read (char* buffer,
+    streamsize num);
+istream->bool : true - 读到num字节
+                            false - 读取的字节数少于
+                                        num，或者出错
+istream::gcount ()返回最近一次读取的字节数
+ostream& ostream::write (
+  const char* buffer, streamsize num);
+ostream->bool : true - 写成功
+                              false - 写失败
+istream::seekg (off_type offset,
+   ios::seekdir origin);
+ostream::seekp (off_type offset,
+   ios::seekdir origin);
+origin - ios::beg
+              ios::cur
+              ios::end
+pos_type istream::tellg (void);
+pos_type osteam::tellp (void);

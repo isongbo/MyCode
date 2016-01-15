@@ -1,0 +1,337 @@
+复习：
+1.信号的处理
+1.1 信号的屏蔽处理
+    sigprocmask() - 设置信号的屏蔽
+    sigpending() - 获取在信号屏蔽期间来过的信号   
+
+1.2 sigaction函数 - signal函数的增强版
+   sigaction() - 设置信号的处理方式
+   sigqueue() - 发送信号和附加数据
+
+1.3 计时器
+   setitimer() - 设置计时器信息
+   getitimer() - 获取计时器信息   
+       
+2.进程间的通信
+2.1 通信的方式
+  文件  信号  管道  共享内存  消息队列  信号量集 网络
+2.2 使用管道进行通信
+(1)概念
+    本质就是一个文件，只是一种比较特殊的文件
+    管道分为：有名管道  和 无名管道
+    有名管道：主要用于任意两个进程间的通信
+    无名管道：主要用于父子进程之间的通信
+(2)有名管道的通信
+    mkfifo xxx.pipe  => 创建管道文件   
+(3)无名管道的通信
+    pipe() - 创建管道,返回两个文件描述符,fd[0]表示读端，fd[1]代表写端
+------------------------------------------------------
+今天内容：
+   (1)使用共享内存进行进程间的通信
+   (2)使用消息队列进行进程间的通信
+   (3)使用信号量集进行进程间的通信
+   (4)网络编程的初识
+
+1.共享内存的使用
+1.1 概念
+   本质上就是使用一块由内核维护的内存区域,而该内存区域可以共享在两个/多个进程之间,多个进程对该内存进行读写操作时，也就是实现进程间的通信
+   共享内存通信是最快的IPC通信,就是因为内存操作速度快
+
+1.2 使用流程
+(1)获取key值,使用ftok函数
+(2)创建/获取共享内存的ID,使用shmget函数
+(3)挂接共享内存,使用shmat函数
+(4)使用共享内存
+(5)脱接共享内存,使用shmdt函数
+(6)如果不再使用共享内存，则删除共享内存,使用shmctl函数
+
+1.3 相关函数的解析
+(1)ftok函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   key_t  ftok(const  char  *pathname,int proj_id);
+第一个参数：有效的路径,要求存在并且可以访问
+第二个参数：项目ID,只取低8位,要求非0
+返回值：成功返回生成的key值,失败返回-1
+        key就是IPC结构的唯一标识(系统级的)
+函数功能：根据参数指定的路径和项目ID生成key值
+
+(2)shmget函数
+   #include <sys/ipc.h>
+   #include <sys/shm.h>
+   int shmget(key_t key, size_t size, int shmflg);
+第一个参数：key值，ftok函数的返回值
+第二个参数：共享内存的大小
+第三个参数：共享内存的操作标志
+    IPC_CREAT - 创建
+    IPC_EXCL - 与IPC_CREAT搭配使用，存在则创建失败
+返回值：成功返回共享内存的ID,失败返回-1
+    shmid也是共享内存的唯一标识(进程级的)
+函数功能：创建/获取共享内存的ID
+
+注意：
+   当创建新的共享内存时，需要指定权限，如：0666
+
+(3)shmat函数
+   #i.lz-nclude <sys/types.h>
+   #include <sys/shm.h>
+   void *shmat(int shmid, const void *shmaddr,int shmflg);
+第一个参数：共享内存的ID，shmget函数的返回值
+第二个参数：挂接地址,给NULL即可，表示由系统选择一个
+    合适的没有被使用的地址来挂接
+第三个参数：挂接标志，给0即可,默认方式
+返回值：成功返回共享内存的地址，失败返回-1
+函数功能：表示将共享内存挂接到调用进程的地址空间中
+
+(4)shmdt函数
+   int shmdt(const void *shmaddr);
+函数功能：
+   表示根据shmat返回的共享内存地址进行脱接
+
+(5)shmctl函数
+   #include <sys/ipc.h>
+   #include <sys/shm.h>
+   int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+第一个参数：共享内存的ID,shmget函数的返回值
+第二个参数：共享内存的操作命令
+      IPC_RMID - 删除共享内存,第三个参数给NULL即可
+第三个参数：结构体指针,主要用于传入/带出数据
+函数功能：表示对指定的共享内存执行指定的操作处理
+
+1.4 相关命令
+    ipcs -m  表示显示当前系统中的共享内存
+    ipcrm -m 共享内存ID  表示删除指定的共享内存
+
+2.使用消息队列实现进程间的通信(重点)
+2.1 概念
+   本质上就是将操作的数据打包到消息中,而把消息放到消息队列中，让多个进程取操作消息队列中的数据从而实现通信
+
+2.2 使用步骤
+(1)获取key值，使用ftok函数
+(2)创建消息队列/获取消息队列的ID,使用msgget函数
+(3)发送消息/接受消息,使用msgsnd/msgrcv函数
+(4)如果不再使用，则删除消息队列,使用msgctl函数
+
+2.3 函数解析
+(1)msgget函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/msg.h>
+   int msgget(key_t key, int msgflg);
+第一个参数：key值，ftok函数的返回值
+第二个参数：
+     IPC_CREAT - 创建
+     IPC_EXCL - 与IPC_CREAT搭配使用，存在则创建失败
+     0  - 不创建，只是获取已存在的消息队列
+返回值：成功返回一个非负整数，表示消息队列的ID，失败-1
+函数功能：表示创建/获取一个消息队列的ID
+
+注意：
+   如果创建新的消息队列时，需要指定权限,如 0666
+
+(2)msgsnd函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/msg.h>
+   int msgsnd(int msqid, const void *msgp, size_t msgsz, int msgflg);
+第一个参数：消息队列ID,msgget函数的返回值
+第二个参数：被发送的消息首地址
+消息的格式：
+   struct msgbuf 
+   {
+      long mtype;/*消息类型, must be > 0 */
+      char mtext[1];/*消息的内容,可以是其他结构*/
+   };
+
+第三个参数：被发送的消息大小
+   只是指定消息内容的大小，不包括消息类型的大小
+第四个参数：发送标志,给0即可
+函数功能：表示向指定的消息队列发送指定的消息
+
+(3)msgrcv函数
+   ssize_t msgrcv(int msqid, void *msgp, size_t msgsz, long msgtyp,int msgflg);
+第一个参数：消息队列ID，msgget函数的返回值
+第二个参数：存放消息的地址 
+第三个参数：接受消息的大小
+    不包括消息的类型，只包括消息的内容
+第四个参数：接受的消息类型
+    0 - 表示读取消息队列中的第一个消息
+   >0 - 表示读取消息队列中第一个类型为msgtyp的消息
+   <0 - 表示读取消息队列中小于等于msgtyp绝对值的第一个
+      消息,类型最小的消息优先读取
+
+第五个参数：接受标志，直接给0即可
+返回值：成功返回读取的字节数，失败返回-1
+函数功能：表示从指定的消息队列中读取消息
+
+(4)msgctl函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/msg.h>
+   int msgctl(int msqid, int cmd, struct msqid_ds *buf);
+第一个参数：消息队列ID，msgget函数的返回值
+第二个参数：执行的具体操作
+    IPC_RMID - 删除消息队列,第三个参数给NULL即可
+第三个参数：结构体指针
+函数功能：针对指定的消息队列执行指定的操作
+
+2.4 相关的命令
+   ipcs -q 表示查看消息队列结构
+   ipcrm -q 消息队列ID 表示删除指定的消息队列
+
+3.使用信号量集进行进程间的通信
+3.1 概念
+   信号量 - 本质上就是一个计数器,主要用于控制同时访问共享资源的进程数/线程数
+   信号量集 - 信号量的集合,主要用于控制同时访问多个共享资源的进程数/线程数,也就是每个信号量控制一种资源
+
+3.2 信号量/计数器的工作方式
+(1)首先给计数器/信号量进行初始化,指定最大值
+(2)如果有进程申请到共享资源,计数器减1
+(3)当计数器的值为0时，停止分配资源给进程，申请资源的进
+    程进入阻塞状态
+(4)如果有进程释放了共享资源,计数器加1
+(5)当计数器的值 >0 时，等待的进程可以申请资源，申请不
+   到资源的进程继续阻塞
+
+3.3 使用信号量集通信的流程
+(1)获取key值，使用ftok函数
+(2)创建/获取信号量集的ID,使用semget函数
+(3)初始化信号量集中指定的信号量，使用semctl函数
+(4)操作信号量的值，也就是加减操作，使用semop函数
+(5)如果不再使用，则删除信号量集,使用semctl函数
+
+3.4 相关函数的解析
+(1)semget函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/sem.h>
+   int semget(key_t key, int nsems, int semflg);
+第一个参数：key值,ftok函数的返回值
+第二个参数：信号量集的大小，也就是信号量的个数
+第三个参数：信号量集的操作标志
+     IPC_CREAT - 创建
+     IPC_EXCL - 与IPC_CREAT搭配使用，存在则创建失败
+返回值：成功返回信号量集的ID，失败返回-1
+函数功能：创建/获取信号量集，得到信号量集的ID
+
+注意：
+    创建新的信号量集时，需要指定权限,如:0666
+
+(2)semctl函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/sem.h>
+   int semctl(int semid, int semnum, int cmd, ...);
+第一个参数：信号量集的ID，semget函数的返回值
+第二个参数：信号量集的下标,从0开始
+第三个参数：信号量集的操作命令
+    IPC_RMID - 删除信号量集,忽略第二个参数sumnum,不需
+       要第四个参数
+    SETVAL - 设置信号量集中第semnum个信号量的初始值,
+       需要第四个参数，直接给个整数即可
+第四个参数：可变长参数，是否需要依赖于cmd
+函数功能：对指定的信号量进行指定的处理
+
+(3)semop函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   #include <sys/sem.h>
+   int semop(int semid, struct sembuf *sops, u
+nsigned nsops);
+第一个参数：信号量集的ID,semget函数的返回值
+第二个参数：结构体指针，指定操作类型
+结构体中的成员：
+    unsigned short sem_num;/*信号量集的下标*/
+    short  sem_op;/*信号量操作，就是加减操作*/
+    short  sem_flg;  /*操作标志，给0即可*/
+
+第三个参数：信号量集的大小,也就是信号量的个数
+函数功能：表示针对指定的信号量进行处理
+
+明日预报：
+   (1)信号量集的使用
+   (2)网络编程
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

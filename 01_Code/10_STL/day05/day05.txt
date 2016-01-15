@@ -1,0 +1,118 @@
+一、向量(vector)
+1.基本特征
+1)连续内存，下标访问
+2)动态内存管理，预分配内存
+3)全面支持深度复制
+2.实例化
+#include <vector>
+vector<元素类型> 向量对象; // 空向量
+vector<元素类型> 向量对象 (初始大小); // 预分配内存
+基本类型：初值都是0
+类类型：缺省构造
+vector<元素类型> 向量对象 (初始大小, 初始值);
+vector<int> vi (5, 13);
+vector<Student> vs (5, Student ("张飞", 20));
+vector<元素类型> 向量对象 (起始迭代器, 终止迭代器);
+int a[] = {1, 2, 3, 4, 5, 6, 7};
+                         ^          ^
+                        a+2     a+5
+vector<int> vi (a+2, a+5); // 3 4 5
+size()/sizeof()
+sizeof (vi) // 向量对象本身的字节数，常数
+vi.size () // 向量对象中数据元素的个数，变数
+3.迭代器
+正向迭代器：iterator，增尾减首，目标可写
+常正向迭代器：const_iterator，增尾减首，目标只读，从常容器中得到的一定是常迭代器
+反向迭代器：reverse_iterator，增首减尾，目标可写
+常反向迭代器：const_reverse_iterator，增首减尾，目标只读
+获取正向迭代器：begin()/end()
+获取反向迭代器：rbegin()/rend()
+对于类似向量的连续内存容器，其迭代器具有随机特性：
+1)可以和整数进行加减；
+2)迭代器之间可以比较大小；
+3)迭代器之间可以相减。
+具有以上随机特性的迭代器一般被称为随机迭代器，而只能进行++/--的迭代器则被称为顺序迭代器。
+4.大小和容量
+size() - 获取大小，实际容纳元素的个数
+capacity() - 获取容量，最多可容纳元素的个数
+resize() - 直接改变大小，构造/析构
+reserve() - 预留容量，不初始化，不构造
+向量的容量只增不减，建议不要用向量保存过多的大对象。
+class Student {
+    char name[1024];
+};
+class Student {
+    Student (...) : name (new char[1024]) {}
+    ~Student (void) { delete[] name; }
+    char* name;
+};
+class Student {
+    string name;
+};
+5.迭代的有效期：任何一种可能导致容器内存布局发生变化的操作，比如压入、弹出、插入、删除等等，都可能导致原先经过初始化的迭代器失效，在使用该迭代器之前，最好重新定位到新的内存布局。
+6.查找和排序
+#include <algorithm>
+iterator find (iterator begin, iterator end,
+    value const& key);
+在[begin, end)范围内查找与key匹配的第一个元素，查找成功返回指向该匹配元素的迭代器，查找失败返回第二个参数end。
+线性查找，平均时间复杂度O(N)。
+void sort (iterator begin, iterator end);
+对[begin, end)范围内的元素做快速排序(O(NlogN))。通过元素类型的“<”比较大小。“升序”序列。
+void sort (iterator begin, iterator end, less cmp);
+对[begin, end)范围内的元素做快速排序(O(NlogN))。通过小于比较器cmp比较大小。“升序”序列。
+函数指针/函数对象->比较器
+7.能够非放入容器中的元素的类型一定要支持深拷贝
+二、双端队列(deque)
+1.双端队列和向量几乎完全一样，只是前端也可以压入和弹出元素——push_front/pop_front。
+2.双端队列时空性能比向量略差。
+三、链表(list)
+1.特殊的成员函数
+1)连续唯一化
+void unique (void);
+把连续重复出现的元素唯一化。
+2)排序
+void sort (void);
+void sort (less cmp);
+3)剪切
+void splice (iterator pos, list& lst);
+将参数链表lst的全部元素剪切到调用链表的pos之前。
+void splice (iterator pos, list& lst, iterator del);
+将参数链表lst中del所指向的元素剪切到调用链表的pos之前。
+void splice (iterator pos, list& lst, iterator begin,
+    iterator end);
+将参数链表lst中[begin, end)范围内的元素剪切到调用链表的pos之前。
+4)合并
+void merge (list& lst);
+将有序的参数链表lst合并到有序的调用链表中，合并后的调用链表依然有序。
+void merge (list& lst, less cmp);
+四、映射(map)
+1.映射是一个key-value对的集合，其中每个key都是唯一的。表示一一对应。
+2.映射中所有的key-value对，按key的升序以平衡有序二叉树的结构组织。
+3.映射可以在对数时间(O(logN))内根据key检索到相应的value。
+4.映射中的数据元素的类型是pair类型。
+template<typename FIRST, typename SECOND>
+class pair {
+public:
+    ...
+    FIRST first;
+    SECOND second;
+};
+first -> key
+second -> value
+5.映射支持“[]”运算符，可以根据key获得相应value的引用。
+6.映射根据key查找相应的value：
+iterator find (key_type const& key);
+五、多重映射(multimap)
+允许键重复的映射。表示一对多的映射。不支持“[]”运算符。
+iterator lower_bound (key_type const& key);
+获取与key对应的匹配下限 (第一个不小于key的元素)。
+iterator upper_bound (key_type const& key);
+获取与key对应的匹配上限（第一个大于key的元素）。
+pair<iterator, iterator> equal_range (
+     key_type const& key);
+first - 匹配下限
+second - 匹配上限
+六、集合(set)
+没有value的映射。
+七、多重集合(multiset)
+没有value的多重映射。

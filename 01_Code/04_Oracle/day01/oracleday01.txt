@@ -1,0 +1,379 @@
+郭爱军
+    guoaj@tarena.com.cn 
+SQL      4  
+PLSQL    2-3
+PROC     2
+
+DB   
+
+一.数据的存储问题
+   内存
+   FILE 
+   DBMS  ----> DB
+二.RDBMS
+   关系型数据库管理系统
+   RDB  关系型数据库库
+        基于二维表的数据库
+   表
+   行
+   列
+   字段名
+   字段值
+   表头
+三.关系型数据库的产品
+   oracle   甲骨文  oracle9i oracle10g
+                    oracle11g
+   db2      IBM  
+   sqlserver  微软
+   
+   mysql ---> SUN ----> oracle 
+   
+四.SQL (struct query ) 分类
+   select  查询语句  
+       select
+   DDL   数据定义语句
+       create  table 
+       drop    table 
+       alter   table         
+   DML   数据操作语句
+       insert  
+       delete 
+       update 
+   TCL   事务控制语句
+       commit
+       rollback
+       savepoint       
+五.如何操作oracle数据库 
+   telnet  172.40.3.30
+       oracle
+       oracle
+   sqlplus 
+       openlab
+       open123
+   SQL>!clear
+   SQL>exit
+   sqlplus  openlab/open123
+   /* 查看表结构 */
+   SQL>desc  表名;
+   表名是 s_emp   员工表
+   SQL> desc s_emp;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ---------------
+ ID   员工编号                            NOT NULL NUMBER(7)
+ LAST_NAME  姓                            NOT NULL VARCHAR2(25)
+ FIRST_NAME 名                                      VARCHAR2(25)
+ USERID                                             VARCHAR2(8)
+ START_DATE 入职日期                                        DATE
+ COMMENTS   备注                                        VARCHAR2(255)
+ MANAGER_ID 直接领导的员工编号                                 NUMBER(7)
+ TITLE      职位                                         VARCHAR2(25)
+ DEPT_ID    部门编号                                        NUMBER(7)
+ SALARY     月薪                                NUMBER(11,2)
+ COMMISSION_PCT 提成                                    NUMBER(4,2)
+   
+ 表头中的每个字段的名字
+ 字段能否是NULL   NOT NULL (不能是NULL)
+ 字段的类型:
+     number(7)  
+     number(11,2)  总宽度11 小数点2位 
+     number 
+     char(10)      定长字符串
+     varchar2(10)  变长字符串
+     date          日期类型
+     
+六.from 子句
+   6.1 从表中查询一个字段对应的内容
+   select  字段名 from  表名;
+   把s_emp 表中 每个员工的月薪显示出来
+   select  salary from  s_emp;     
+     
+   6.2 如何从表中查询多个字段对应的内容
+   select  字段名1,字段名2,字段名3
+       from  表名;
+   把s_emp 表中的id  first_name  salary
+       显示出来。
+   select  id,first_name,salary
+       from  s_emp;           
+   SELECT  ID,FIRST_NAME,salary
+       from  s_emp;
+   6.3 如何从表中查询所有的字段
+   select id,first_name,...;
+   * 号可以代表所有的字段名 
+   select * from  s_emp;
+   6.4 字段 和 表达式的数学运算
+   +  -  *  /
+   select  salary*12-2000 from  s_emp;
+   select  salary,salary/21 from s_emp;
+   6.5 给字段或者表达式起别名 
+   一年按照16个月计算 计算每个人的年薪
+   select salary*12,salary*16 from  s_emp; 
+   
+   select salary*12 sal,
+       salary*16 yearsal from  s_emp;
+   别名自动处理成大写
+   别名只能有一个      
+   select salary*12 sal,
+       salary*16 year sal from  s_emp;            
+   ERROR at line 2:
+   ORA-00923: FROM keyword not found where expected      
+   
+   解决上面的问题 使用双引号即可
+       让别名原样显示
+       可以把多个别名看成一个
+   select salary*12 sal,
+       salary*16 "year Sal" from  s_emp;     
+   
+   6.6 sql 中的字符串表达
+      sql中的字符串使用单引号表达
+      ''  ' '  'a'  '$'  'hello world' 
+      select  first_name from s_emp;    
+   6.7 字符串的拼接
+      oracle  ------> ||
+      把s_emp 表中 first_name  和 
+          last_name 拼接起来
+      select first_name||last_name 
+          from s_emp;      
+      在姓名之间 拼接一个下滑线字符串
+      select first_name||'_'||last_name
+          from s_emp; 
+      select first_name||'HELLO'||last_name
+          from s_emp; 
+      this  is  this's 
+      在姓名之间 拼接一个单引号字符串
+      转义处理 %d %%
+      select first_name||''''||last_name
+          from s_emp; 
+      在姓名之间 拼接二个单引号字符串
+      select first_name||''''''||last_name
+          from s_emp; 
+      select first_name||''''||''''
+          ||last_name from s_emp; 
+    6.8 NULL 值处理
+       为什么要对NULL值进行处理
+       因为NULL值和任何值做运算结果都是NULL
+       换一种年薪计算的方式
+          月薪*12 + 月薪*12*提成/100  
+       select  salary*12,
+           salary*12*(1+commission_pct/100)
+               from s_emp;      
+       nvl(par1,par2)
+           当par1的值为NULL时 就返回par2
+           的值 如果par1不为NULL就返回
+           par1本身的值。 
+       select  salary*12,
+           nvl(salary*12*(1+commission_pct/100),0)
+               from s_emp;
+       /* NULL 值要尽早处理 */        
+       select  salary*12,
+           salary*12*(1+nvl(commission_pct,0)/100)
+               from s_emp;        
+       显示s_emp 表中 salary first_name 
+           manager_id 如果manager_id 是
+           NULL就显示成 -1 
+       select  salary,first_name,
+           nvl(manager_id,-1)
+           from s_emp;
+       nvl 中两个参数的类型要保持一致
+   6.9 数据的排重  distinct 
+      select salary from s_emp;
+      select distinct salary from s_emp;
+      把s_emp 表中salary 和title显示出来
+      select  salary,title from s_emp;     
+      select distinct salary,title 
+          from s_emp;  
+      /* error */  
+      -- 这是单行注释   
+      select  salary,distinct title 
+          from s_emp;  
+      select  distinct id,first_name
+          from s_emp;
+ 七.where 子句
+    7.1 where子句的作用
+    限制表中的行数据返回 符合where条件的
+        数据被选中,不符合where条件的数据
+        被过滤掉。
+    7.2 两个极限条件
+    from 表名  where 条件;
+    /* 永真条件 */
+    from 表名  where 1=1; 
+    from 表名;
+    /* 永假条件 */
+    from 表名  where 1=2;              
+    from 表名  where 1!=1;      
+    7.3 举例
+    查询s_emp 表中工资等于1400的员工
+        列出id  first_name salary
+    select  id,first_name,salary 
+        from s_emp where salary=1400;    
+    查询s_emp 表中工资小于600的员工
+        列出id  first_name salary 
+    select  id,first_name,salary 
+        from s_emp where salary<600;
+    -- no rows selected          
+    7.4 字符串类型的条件表达
+    查询一个员工 找出first_name 叫Carmen
+       的 列出id  first_name 
+    select id,first_name
+        from s_emp 
+            where first_name='Carmen';   
+    查询一个员工 找出first_name 叫Mark
+       的 列出id  first_name           
+    select id,first_name
+        from s_emp 
+            where first_name='Mark';         
+    SQL 语句不区分大小写
+    字符串的值 要严格区分大小写
+    字符串的值需要使用单引号 
+    7.5 常见的比较运算符
+    =  !=  >  < >= <= 
+    7.6 SQL 提供的比较运算符
+       7.6.1 表达一个闭区间 [a,b]
+          /* c 语言 
+          salary>=a && salary <= b */
+          /* c 语发上没问题 但逻辑有问题
+               a=<salary<=b   */ 
+          where salary between  a and b;
+       找出工资在[1400,2500]之间的员工
+           列出id  first_name salary 
+       select  id,first_name,salary
+           from s_emp 
+               where salary between 1400 
+               and 2500;                        
+        7.6.2 表达一个字段的取值有如下的
+           几个值。
+           where 字段 in (值1,值2,值3);
+        找出部门编号是 31 32 或者是 50
+           部门的员工 显示 id first_name 
+           dept_id。
+        select  id,first_name,dept_id 
+            from s_emp 
+                where dept_id in(31,32,50);       
+        7.6.3 NULL值的判断
+        where 字段 is NULL;
+        找出提成是10的员工 列出id 
+            first_name commission_pct 
+        select id,first_name,
+            commission_pct 
+            from s_emp 
+                where commission_pct=10;
+        找出提成不是10的员工 列出id 
+            first_name commission_pct              
+        select id,first_name,
+            commission_pct 
+            from s_emp 
+                where commission_pct!=10;
+        select id,first_name,
+            commission_pct 
+            from s_emp 
+                where commission_pct is null;    
+        /* 找出manager_id 是NULL的员工 列出
+           id first_name manager_id */        
+        7.6.4 模糊查询运算符 like 
+        找出姓李的人
+            李克强  李白 李世民 
+        找出带龙的 
+            龙飞凤舞  李小龙  小龙女
+        where 字段 like '统配串'
+        通配符:
+            %   0-n个任意字符
+            _   一个任意字符 
+        where  name like '李%'
+        where  name like '%龙%'           
+        找出第二个字符是龙的?
+        where  name like '_龙%'
+       
+        找出s_emp 表中first_name 中带a
+           字符的。
+        select  first_name 
+            from s_emp 
+                where first_name like '%a%';      
+        找出s_emp 表中first_name 中第二个字符时
+            a字符的。
+        select  first_name 
+            from s_emp 
+                where first_name like '_a%';      
+       
+        user_tables 所有的表的信息
+        select  table_name 
+            from  user_tables;
+        找出所有的以S_开头的表?
+        select  table_name 
+            from  user_tables
+                where table_name 
+                like 'S_%';    
+        新的转义问题:
+         select  table_name 
+            from  user_tables
+                where table_name 
+                like 'S\_%' escape '\';   
+        找出所有的以S__开头的表?
+        create table S__1412(id number);
+        select  table_name 
+            from  user_tables
+                where table_name 
+                like 'S\_\_%' escape '\'; 
+    7.7 逻辑条件连接符
+    and    ca and cb 
+        ca 和 cb 同为真时
+       找出工资在[1400,2500] 之间的
+       select id,salary  
+           from  s_emp 
+               where salary>=1400 and 
+               salary <= 2500; 
+    or     ca or  cb 
+        ca 和cb只要有一个为真即可 
+        部门编号是31或者是 32 或者是50
+        的员工 列出 id first_name dept_id
+        select  id,first_name,dept_id 
+            from s_emp 
+                where dept_id=31 or 
+                dept_id=32 or dept_id=50; 
+       
+    not   对立面问题
+       =      !=
+       >      <=
+       <      >=
+       between a and b  not between a and b
+       in     not in(注意NULL值)
+       like   not like 
+       is null  is not null 
+    找出提供不是NULL的员工  列出
+       id  first_name  commission_pct 
+    select  id,first_name,commission_pct
+       from  s_emp where commission_pct
+       is not null;   
+    
+    7.8 条件的优先级问题
+    select dept_id,salary 
+        from  s_emp 
+            where salary>1000 and 
+            dept_id=41  
+            or dept_id=42;
+    select dept_id,salary 
+        from  s_emp 
+            where salary>1000 and 
+            (dept_id=41  
+            or dept_id=42);          
+    select dept_id,salary 
+        from  s_emp 
+            where (salary>1000 and 
+            dept_id=41)  
+            or dept_id=42; 
+    
+    1000+salary*12
+    (1000+salary)*12
+    
+ 八.函数
+    返回值   函数(参数列表);   
+    
+    
+    
+    
+    
+    
+       
+       
+               
+    
+    
+                                     

@@ -1,0 +1,135 @@
+一 MFC的视图窗口
+  1 相关问题
+    MFC视图窗口 - 提供了一个用户显示数据的窗口，可以和进行交互操作
+  2 相关类
+    CView及其子类 - 父类CWnd，封装了关于视图窗口的各种操作
+  3 视图的使用
+   3.1 代码的书写
+    1 声明一个自己的视图类（CMyView）公有派生自CView
+    2 自己的视图类（CMyView）必须重写父类（CView）纯虚函数OnDraw
+    3 在处理框架窗口的WM_CREATE消息时，定义一个视图类对象，并利用
+      这个对象调用Create函数 创建视图窗口
+  4 命令消息（WM_COMMAND）的处理顺序
+    View-->Frame-->App 
+        （CFrameWnd::OnCmdMsg函数内部代码执行先后顺序决定）
+  5 对象关系图
+    m_pMainWnd = pFrame;
+    m_pViewActive = pView;
+    theApp
+      |-->m_pMainWnd (保存框架类对象地址pFrame)
+            |-->m_pViewActive(保存视图类对象地址pView)
+
+二 运行时类信息机制（4）
+  1 运行时类信息机制的作用
+    程序在执行过程中可以获知对象 相关的类的信息。
+  2 运行时类信息机制的使用
+    2.1 类必须派生自CObject类
+    2.2 类内必须添加声明宏  DECLARE_DYNAMIC
+    2.3 类外必须添加实现宏  IMPLEMENT_DYNAMIC
+    
+    CObject::IsKindOf(...) - 函数可以判断类对象是否属于某个类
+
+  3 运行时类信息机制的实现
+    3.1 数据结构
+     struct CRuntimeClass  （静态变量的类型）
+     {
+	LPCSTR m_lpszClassName;//类名称
+	int m_nObjectSize;     //类大小（sizeof）
+	UINT m_wSchema;        //类的版本 0xFFFF
+	CObject* (PASCAL* m_pfnCreateObject)();
+                     //动态创建机制使用，运行时类信息机制为NULL
+	CRuntimeClass* m_pBaseClass; 
+                     //父类静态变量地址（负责连接链表）
+	CRuntimeClass* m_pNextClass; // 运行时类信息机制为NULL    
+     };
+    3.2 宏展开的代码
+       见代码
+    3.3 宏展开各部分的作用
+       classCDog - 静态变量
+           保存了类的相关信息 例如：类名 类大小 类版本...
+           负责连接链表
+       GetRuntimeClass() - 虚函数
+           获取CDog类静态变量地址（获取链表头节点）
+    3.4 关系图    
+       GetRuntimeClass()
+          |->&CDog::classCDog
+                |->类名，类版本，类大小...
+                |->&CAnimal::classCAnimal
+                      |->类名，类版本，类大小...
+                      |->&CObject::classCObject
+                            |->类名，类版本，类大小...
+                            |->NULL
+附：***********************
+  RUNTIME_CLASS(theClass)===&theClass::classtheClass
+         获取的为括号中类的静态变量的地址
+
+    3.5 IsKindOf函数内部执行过程
+      1) 利用CDog类对象（yellowdog）调用虚函数GetRuntimeClass()
+         获取&CDog::classCDog(链表头节点)
+      2) 利用CDog类静态变量（CDog::classCDog）和目标进行比对如果
+         成功表示对象（yellowdog）属于这个类，如果失败执行3
+      3) 利用CDog类静态变量（CDog::classCDog）的第五个成员获取
+         父类静态变量，和目标循环进行比较。在比对过程中只要有一次
+         比对成功证明对象属于这个类，循环结束一次比对都不成功证明
+         对象不属于这个类。
+三 动态创建机制
+  1 动态创建机制的作用
+    在不知道类名的情况下，将类的对象创建出来。
+  2 动态创建机制的使用
+    2.1 类必须派生自CObject
+    2.2 类内必须添加声明宏  DECLARE_DYNCREATE
+    2.3 类外必须添加实现宏  IMPLEMENT_DYNCREATE
+
+       CRuntimeClass::CreateObject - 函数创建类的对象
+  3 动态创建机制的实现
+    3.1 函数的区别（多了一个静态成员函数）
+      CObject* PASCAL CDog::CreateObject() 
+      {
+	return new CDog; //new了一个CDog类对象并返回对象地址
+      } 
+    3.2 静态变量的区别
+      第四个成员不再为NULL,保存的为新增加的静态函数的地址（名）
+
+  4 CRuntimeClass::CreateObject（对象加工厂）内部执行过程
+    1) 利用CDog类静态变量（CDog::classCDog链表头节点）的第四个
+       成员获取 新增加的静态函数地址（CDog::Createobject）
+    2) 调用这个静态函数（CDog::Createobject）在函数内部new了一个
+       CDog类对象，并返回对象地址。
+四 窗口切分
+  1 相关问题
+    动态切分 - 在程序执行过程中根据用户的需要实时完成切分，最多
+               只能切分2*2个
+    静态切分 - 在创建窗口时就完成切分，切分视图窗口可以显示不同
+               内容。
+  2 相关类
+    CSplitterWnd - 不规则框架窗口类，封装了关于不规则框架窗口的
+                   操作。父类CWnd
+  3 静态切分
+    3.1 重写CFrameWnd::OnCreateClient虚函数。
+    3.2 在虚函数内部调用CSplitterWnd::CreateStatic创建不规则框架
+        窗口。
+    3.3 在虚函数内部调用CSplitterWnd::CreateView给各个客户区创建
+        视图窗口。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+

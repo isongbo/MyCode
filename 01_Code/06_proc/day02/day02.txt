@@ -1,0 +1,207 @@
+﻿一.proc 的预编译选项
+    gcc  -c  -o  -S  -E 
+    1.1 和字符串处理相关的预编译选项
+    proc  char_map=charz   默认的值   会把char数组当
+           定长字符串处理  空格补齐    \0结尾
+           char_map=charf|varchar2   会把char数组当
+           定长字符串处理  空格补齐  
+           char_map=string       会把char数组当
+           变长字符串处理   \0结尾 
+     1.2 和c++程序调用相关的预编译选项
+           三个预编译选项 一个申明区的问题
+          oname    默认输出的是以.c 结尾的文件 但c++ 推荐
+                    以.cpp结尾
+          parse      默认以c的full方式解析 
+                     c++的方式是 partia  严格c++检查 不推荐
+                     parse=none 是c++推荐的方式
+          code   默认是以ansi_c  的c语言标准
+                     c++需要使用 code=cpp 
+                     当code=cpp时 需要把所有的宿主变量 放入
+                     申明区 
+                     exec sql begin declare section;
+                     exec sql  end    declare section;              
+         proc  ***.pc  oname=***.cpp  parse=none code=cpp
+         gcc    ***.cpp  -lclntsh  -lstdc++
+         g++  ***.cpp  -lclntsh  
+    1.3 和PLSQL 调用相关的预编译选项
+         sqlcheck=semantics 
+         userid=用户名/密码
+         
+二.proc中宿主变量的使用注意事项
+    2.1宿主变量 强烈建议放入申明区
+         exec  sql begin  declare section;
+         exec  sql  end    declare section;
+         这样可以避免系统  和 语言直接的差异
+    2.2 宿主变量 可以使用指针  但需要分配内存 
+         特例:
+         /* 只能读不能写 */
+         char  *userpasswd="openlab/open123";  
+    2.3 DDL中不能使用 宿主变量 
+         char  table_name[30]="s_emp";
+        /* 删除一张表叫 table_name */
+         exec sql  drop  table table_name;    
+         exec sql  drop  table :table_name;  // error  
+    2.4 在sql语句中 使用宿主变量时  要在变量名前加冒号
+        这样可以避免sql的翻译问题 
+        
+三.指示变量 
+    3.1 概念
+    当数据库中的字段值 赋值给宿主变量时  赋值的状态可以通过
+           指示变量来获取。
+    3.2 语法
+    指示变量 必须是short类型
+    exec sql  select  字段名  into  :宿主变量:指示变量
+             from  表名  where 条件;  
+    exec sql  select  字段名  into  :宿主变量 indicator :指示变量
+             from  表名  where 条件;  
+    指示变量的值为 0  时  代表赋值正常 
+                              -1时   代表数据中的字段值是NULL值
+                              >0 时 代表截断赋值 尽量避免 
+    3.3 写一个proc程序  把s_emp 表中 id=1的manager_id 
+          赋值给一个宿主变量  并且使用指示变量 来获取赋值的
+          状态。
+ 四.数组变量 
+     4.1 proc中数组变量的使用注意事项
+     proc只支持一维数组  字符除外
+             int   id[50];
+             char  name[30];
+             char  names[40][30];
+     proc中不支持数组指针
+     proc中数组的最大元素个数 32767
+     在select语句中使用数组 只要出现数组名即可 不用出现下标
+     4.2 连接数据  把s_emp 表中所有的id first_name salary
+       对应的数据 分别赋值给三个数组。然后把这三个数组的
+       数据输出。
+       
+       得到sql语句影响的数据的行数 
+       sqlca.sqlerrd[2]
+
+五. sqlca 通信区
+     5.1 sqlca通信区是什么?
+     sqlca通信区 本质上就是一个全局结构体,这个结构体中
+            有些字段用来记录sql语句的执行信息。并且每执行
+            一次sql 就会把通信区中的字段 更新一遍。所以要
+            获取一条sql的执行信息 要在sql执行完之后立即
+            获取 否则会被下一次sql覆盖掉。
+     5.2 sqlca 可以提供的sql信息 
+     sqlca.sqlerrd[2]  可以获取sql语句影响的数据的行数
+     sqlca.sqlcode    sql语句执行的状态
+            ==0    sql语句执行正常
+            >0      sql语句执行出错 
+            <0      网络错误 或者 数据库本身错误 
+     sqlca.sqlerrm.sqlerrmc   sql执行出错的消息内容
+     
+六.oraca 通信区  (了解)
+    是对sqlca通信区的信息补充  
+           可以通过这个通信区得到程序中执行的sql语句
+    1.包含oraca
+     exec sql  include sqlca;
+     exec sql  include oraca;
+    2.打开oraca
+     exec  oracle  option(oraca=yes);
+    3.设置sql的保存标志 
+      oraca.orastxtf =0  默认的 不保存sql
+                                =1 当sql出错时保存 
+                                =2 当sql出现警告 或者sql出错时保存
+                                =3 尽最大可能保存 
+     4.通过oraca 获取sql
+       oraca.orastxt.orastxtc 
+七.proc 中如何使用sql语句 
+    7.1 select  语句
+    在select语句前 加 exec  sql
+    结合into  把数据放入宿主变量 
+    7.2 DDL(create  table  drop  table  alter table)
+          DML(insert   delete  update)
+          TCL(commit  rollback  savepoint)
+    在这些语句前 加exec  sql 
+    DDL 中不能使用宿主变量 
+    7.3 写一个proc程序 连接数据库   然后建立一张表 empn
+    id    number   pk,   name   varchar2(30)
+    salary   number。建表成功 打印 create table success
+    不成功 输出建表失败的原因。然后把下面的数据插入数据
+    库中  1  test1   8000   成功提示 insert data  success
+    并提交数据, 不成功输出原因。 再把下面的数据存入宿主
+    变量中   2   test2    19000  然后存入数据库中 提交数据。 
+    更新 id=1的工资  增加原来工资的60%   提交数据。
+    最后使用查询 把id=1的工资查询出来  并打印 验证更新是否
+    成功。
+
+八.proc 中如何调用PLSQL
+    8.1 连接数据库之后 出现一个调用块
+    exec sql  execute 
+           begin
+                   /* 这里就是PLSQL的匿名块 */
+           end;
+    end-exec;     
+    8.2  proc中调用存储过程
+    写一个存储过程  传入两个整数参数   把两个参数的和 存入
+    第二个参数中  然后在proc程序中 调用这个过程 验证过程
+    的功能。
+    create  or replace  procedure getSum(
+        var_x number,var_y  in out number)
+        is 
+        begin
+                var_y:=var_x+var_y;
+        end;
+
+  proc   ***.pc  sqlcheck=semantics  
+          userid=openlab/open123   
+        sqlcheck=semantics  就是调用PLSQL必须给的
+        userid 就是在预编译时连接数据库 确定存储过程是否
+                 存在与合法。
+
+    8.3  写一个PLSQL中的函数  传入两个整数参数  返回两个
+        参数的最大值  并且把两个参数的和 存入第二个参数中
+        写一个proc程序 调用这个函数  验证函数的功能,要求
+        两个参数必须使用宿主变量。
+        create  or  replace   function  funGetMaxAndSum(
+           var_x in number,var_y in out number)
+           return number
+           is 
+               var_temp  number;
+           begin
+               var_temp:=var_y;
+               var_y:=var_x+var_y;
+               if var_x < var_temp  then
+                  return  var_temp;
+               end if;
+                  return  var_x;       
+           end;
+
+九.数据的连接 
+     9.1 本地连接 
+           exec sql connect:变量;
+           exec sql connect:变量  identified by :变量;
+           连接的数据库的服务名 是: 
+           $ORACLE_SID
+     9.2 远程连接 
+           涉及到一个文件 
+           $ORACLE_HOME/network/admin/tnsnames.ora
+            在172.40.3.30的文件中写了如下内容:
+            db730 是远程数据库描述
+ db730 =
+  (DESCRIPTION =
+    (ADDRESS = (PROTOCOL = TCP)(HOST = 172.40.7.30)(PORT = 1521))
+    (CONNECT_DATA =
+      (SERVER = DEDICATED)
+      (SERVICE_NAME = tarena)
+    )
+  )          
+         
+
+  
+
+
+
+
+
+
+
+
+         
+  
+
+
+
+
+ 

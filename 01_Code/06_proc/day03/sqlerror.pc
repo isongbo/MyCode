@@ -1,0 +1,26 @@
+#include <stdio.h>
+exec sql include sqlca;
+exec sql whenever sqlerror do processError();
+void  processError(){
+    printf("have sqlerror !\n");
+}
+void  processNotFound(){
+    printf("not found data !\n");
+}
+exec sql  whenever notfound 
+    do processNotFound();
+int main(){
+    exec sql begin declare section;
+	    char userpasswd[30]="openlab/open123";
+	    char name[30];
+	exec sql end   declare section;
+	exec sql connect:userpasswd;
+	printf("app start!\n");
+	exec sql drop  table s_emp;
+    exec sql select name into :name 
+		from  s_region where id=-1;
+	printf("name=%s\n",name);
+	printf("app end!\n");
+    exec sql commit work release;
+}
+

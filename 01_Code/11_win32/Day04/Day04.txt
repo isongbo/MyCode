@@ -1,0 +1,51 @@
+long a = 15634;
+
+a & 0x0000FFFF
+
+(a & 0xFFFF0000)>>16
+
+
+int x = LOWORD(lParam);
+int y = HIWORD(lParam);
+
+SendMessage( hWnd,.......)
+{
+    经过一系列的匹配查找确定窗口处理函数
+    return WndProc(.....);
+}
+
+TranslateMessage( &nMsg )
+{
+   if( nMsg.message != WM_KEYDOWN )
+       return ..;
+   根据nMsg.wParam(虚拟键码值)可以获知哪个按键被按下
+   if(不是)
+       return..；
+   if(是)
+   {
+       判断CapLock（大写锁定键）是否处于打开状态
+       if(打开)
+          PostMessage( nMsg.hwnd, WM_CHAR, 0x41,...);
+       else
+          PostMessage( nMsg.hwnd, WM_CHAR, 0x61,...);
+   }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

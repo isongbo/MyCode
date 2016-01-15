@@ -1,0 +1,78 @@
+TranslateAccelerator( hWnd, hAccel, &nMsg )
+{
+    if( nMsg.message != WM_KEYDOWN..)
+        return 0;
+    根据nMsg.wParam(键码值)可以获知哪些按键被按下
+    (CTRL+M)
+    拿着CTRL+M到hAccel（加速键表）中去匹配查找
+    if(没找到)
+      return 0；
+    if（找到）
+    {
+        PostMessage( hWnd, WM_COMMAND, 
+                                          ID_NEW|||1, NULL );
+        return 1；
+    }
+}
+
+
+
+
+int SetMapMode(
+	HDC hdc, //DC句柄
+	int fnMapMode //映射模式
+	); 返回旧的映射模式
+
+fnMapMode :
+     MM_TEXT - 默认 1个逻辑 = 1个像素，
+                           X轴右为正，Y轴下为正
+     MM_HIENGLISH - 1个逻辑=0.001英寸
+     MM_LOENGLISH - 1个逻辑=0.01英寸
+     MM_HIMETRIC - 1个逻辑=0.01毫米
+     MM_LOEMTRIC - 1个逻辑=0.1毫米
+     MM_TWIPS - 1个逻辑=1/1440英寸（打印机常用）
+          以上五个对应关系 X轴右为正，Y轴上为正
+
+     自定义对应关系
+     MM_ANISOTROPIC - x轴的一个逻辑=自定义1
+                                          y轴的一个逻辑=自定义2
+     MM_ISOTROPIC - 一个逻辑 = 自定义
+
+BOOL SetWindowExtEx(
+  HDC hdc,       // DC句柄
+  int nXExtent,  // 逻辑的X比例  
+  int nYExtent,  // 逻辑的Y比例  
+  LPSIZE lpSize  // 返回原来的比例,可以为NULL
+);
+
+BOOL SetViewportExtEx(
+  HDC hdc,       // DC句柄
+  int nXExtent,  // 设备的X比例  
+  int nYExtent,  // 设备的Y比例  
+  LPSIZE lpSize  // 返回原来的比例，可以为NULL
+);
+
+普通窗口  - 自定义函数 调用 缺省函数
+WndProc(...)
+{
+   .....
+   DefWindowProc(....)
+}
+
+对话框窗口 - 缺省函数 调用 自定义函数
+缺省（...）
+{ 
+     .....
+     自定义函数
+}
+
+
+
+
+
+
+
+
+
+
+

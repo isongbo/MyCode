@@ -1,0 +1,201 @@
+复习：
+1.网络编程
+1.1 基于TCP的通信模型
+服务器：
+    (1)创建socket,使用socket函数
+    (2)准备一个通信地址,使用结构体
+        struct sockaddr_in addr;
+    (3)绑定,使用bind函数
+    (4)监听,使用listen函数
+    (5)响应客户端的连接请求,使用accept函数
+    (6)进行通信,read/write/send/recv函数   
+    (7)关闭socket,使用close函数
+客户端：
+    (1)创建socket，使用socket函数
+    (2)准备通信地址,使用结构体
+    (3)连接，使用connect函数
+    (4)进行通信,read/write/send/recv函数
+    (5)关闭socket，使用close函数
+   
+1.2 基于UDP的通信模型
+服务器：
+    (1)创建socket，使用socket函数
+    (2)准备通信地址，使用结构体
+    (3)进行绑定,使用bind函数
+    (4)进行通信,使用sendto/recvfrom函数
+    (5)关闭socket，使用close函数
+客户端：
+    (1)创建socket,使用socket函数
+    (2)准备通信地址，使用结构体
+    (3)直接进行通信,使用sendto/recvfrom函数
+    (4)关闭socket，使用close函数
+------------------------------------------------------
+今天内容：
+    (1)线程及其相关的处理
+
+1.线程及其相关的处理
+1.1 线程的概念
+   unix/linux 支持多用户，多任务以及多种处理器
+   线程 - 隶属于进程，也就是进程中的程序流
+   操作系统支持多进程，在每一个进程内部又可以支持多线程，多线程并行
+   进程是重量级的,每个进程都需要独立的内存空间，新建进程对内存等资源的消耗是比较大的;线程是轻量级的,线程不需要独立的内存空间，会共享所在进程的内存资源，但是每个线程会有独立的一块栈区 
+
+1.2 线程的基本操作
+(1)pthread_create函数
+   #include <pthread.h>
+   int pthread_create(pthread_t *thread, const pthread_attr_t *attr,void *(*start_routine) (void *), void *arg);
+第一个参数：存放线程的id
+第二个参数：线程的属性,一般给NULL即可
+第三个参数：线程的处理函数
+第四个参数：处理函数的实参
+返回值：成功返回0，失败返回错误编号
+函数的功能：创建一个新的线程
+
+注意：
+   (1)编译连接的时候，需要加上  -lpthread
+   (2)调用pthread_create函数创建新线程之后，多个线程之间相互独立，相互影响，主线程结束则进程结束，进程结束则进程中所有线程都结束
+
+练习：
+    使用pthread_create创建新的线程，在线程处理函数中打印0~99之间的数
+
+(2)pthread_self函数
+   #include <pthread.h>
+   pthread_t pthread_self(void);
+函数的功能：获取当前执行线程的id返回
+
+练习：
+   要求从主函数中输入圆的半径，创建一个新的线程，将圆的半径传入线程处理函数，计算周长和面积并且打印
+   周长公式：2 * 3.14 * r
+   面积公式：3.14 * r * r	
+
+(3)pthread_join函数
+   #include <pthread.h>
+   int pthread_join(pthread_t thread, void **retval);
+第一个参数：线程的id
+第二个参数：线程终止的返回值，不为空时，表示将所等待线
+    程的退出状态拷贝到retval所指向的空间中
+返回值：成功返回0，失败返回错误编号
+函数的功能：等待指定的线程结束，并且获取退出状态信息
+
+复习：
+    void max(int* pi)
+    {
+        int num = 20; 
+        *pi = num;       
+    }
+    void max(int** ppi)
+    {
+        int* pi = malloc(4);
+        *ppi = pi;        
+    }
+
+练习：
+    启动一个新的线程，在线程处理函数中计算1~100之间的和并且返回，通过pthread_join等待并且接受函数的返回值
+
+(4)pthread_exit函数
+    #include <pthread.h>
+    void pthread_exit(void *retval);
+函数的功能：终止正在运行的线程，然后通过参数带出返回
+    值，而返回值可以通过pthread_join函数获取
+    
+    exit() - 终止进程,进程中的所有线程终止
+    pthread_exit() - 终止单个线程
+
+(5)pthread_detach函数
+   #include <pthread.h>
+   int pthread_detach(pthread_t thread);
+函数的功能：将指定的线程分离开，分离的线程结束时会自动
+   的释放资源给系统，不需要其他线程等待和帮助等
+
+(6)pthread_cancel函数
+   #include <pthread.h>
+   int pthread_cancel(pthread_t thread);
+函数的功能：
+   表示向参数指定的线程发送取消请求 
+
+   #include <pthread.h>
+  int pthread_setcancelstate(int state, int* oldstate);
+函数的功能：设置取消的状态信息,状态参数主要有：
+     PTHREAD_CANCEL_ENABLE - 可以被取消
+     PTHREAD_CANCEL_DISABLE - 不可以被取消
+
+    int pthread_setcanceltype(int type,int* oldtype);
+函数的功能：设置取消的类型,类型参数主要有：
+    PTHREAD_CANCEL_DEFERRED - 推迟取消   
+    PTHREAD_CANCEL_ASYNCHRONOUS - 立即取消
+
+1.3 线程的同步问题
+(1)概念
+    当多线程之间访问共享资源时，多个线程同时访问共享资源可能造成数据不一致的问题，需要进行多线程之间的协调，多线程之间的协调问题叫做线程的同步问题
+
+(2)线程同步的思路
+    当访问共享资源时,不能并行,而是串行(一个个访问)    
+
+(3)线程同步的解决方案
+    提供互斥量(互斥锁)来实现线程的同步问题
+
+(4)使用互斥量的步骤
+    a.定义互斥量
+       pthread_mutex_t lock;
+    b.初始化互斥量
+       pthread_mutex_init(&lock,0);
+    c.进行加锁
+       pthread_mutex_lock(&lock);
+    d.使用共享资源
+    e.进行解锁
+       pthread_mutex_unlock(&lock);
+    f.如果不再使用，可以销毁互斥量
+       pthread_mutex_destroy(&lock);
+
+推荐一本书：
+    Unix高级环境编程(第三版)
+
+(5)使用信号量来实现线程的同步问题
+    信号量本质就是一个计数器，主要用于控制同时访问共享资源的进程数/线程数
+    如果信号量的值是1，效果等同于互斥量
+
+(6)信号量的使用流程 
+    #include <semaphore.h>
+    a.定义一个信号量
+      sem_t sem;
+    b.初始化信号量
+      sem_init(&sem,0,最大值/*信号量的初始值*/);
+      其中第二个参数给0表示 控制访问共享资源的线程数，
+      其他值表示控制的是进程数
+    c.获取一个信号量(计数器减1)
+      sem_wait(&sem);
+    d.访问共享资源
+    e.释放一个信号量(计数器加1)
+      sem_post(&sem);
+    f.如果不再使用，删除信号量
+      sem_destroy(&sem);
+
+练习：
+    使用信号量模拟控制访问数据库的最大并行线程，要求数据库最多支持10个线程同时访问，启动20个线程，查看一下控制的效果
+
+明日预报：
+    编程实现一个简易的聊天室!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+

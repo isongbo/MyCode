@@ -1,0 +1,82 @@
+A:B
+.......
+
+B:C
+........
+
+C:D
+.........
+
+D:
+........
+
+D-->C-->B-->A
+
+
+
+
+ASCII - 7位代表一个字符（128个）
+             8位代表一个字符（扩充128个）
+
+MBCS
+   DBCS - 单双字节混合编码(WINDOW主流编码方式)
+   A   我      是       程       序       员
+   01 0203 0405 0607  0809  0A0B
+   0102 0304 0506 0708 090A 0B
+
+UNICODE
+   UTF16 - 统统按照两个字节编码
+   A        我      是       程       序       员
+   0001  0203 0405 0607  0809  0A0B
+
+<winnt.h>
+#ifdef  UNICODE                   
+typedef wchar_t TCHAR;
+#define __TEXT(quote) L##quote     
+#else  
+typedef char TCHAR;
+#define __TEXT(quote) quote         
+#endif 
+
+
+
+BOOL WriteConsole(
+  HANDLE hConsoleOutput,   // 标准输出句柄
+  CONST VOID *lpBuffer,  // 输出的内容的buff
+  DWORD nNumberOfCharsToWrite,     
+                          // 准备输出的长度 
+  LPDWORD lpNumberOfCharsWritten,  
+                    // 返回实际输出的长度
+  LPVOID lpReserved                // 备用，为NULL
+);
+
+HANDLE GetStdHandle(
+  DWORD nStdHandle   
+    //  STD_INPUT_HANDLE/STD_OUTPUT_HANDLE/
+    // STD_ERROR_HANDLE
+);//返回值获取相应的句柄
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

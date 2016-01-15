@@ -1,0 +1,248 @@
+复习：
+1.使用信号量集进行通信
+1.1 概念
+   信号量本质就是一个计数器，控制访问有限资源的进程数
+   信号量集就是信号量的集合/数组，可以控制多种有限资源
+
+1.2 计数器的工作方式
+   (1)首先给计数器初始化最大值
+   (2)如果有进程申请到资源，计数器减1
+   (3)当计数器为0时，此时申请资源的进程进入阻塞
+   (4)如果有进程释放了资源，计数器加1
+   (5)当计数器不为0时，等待的进程抢占资源，申请不到的进程继续等待
+
+1.3 使用信号量集进行通信的步骤
+   (1)获取key值，使用ftok函数
+   (2)根据key值创建/获取信号量集的id,使用semget函数
+   (3)初始化信号量集中指定的信号量,使用semctl函数
+   (4)操作信号量集中指定的信号,使用semop函数
+   (5)如果不再使用，则删除信号量集，使用semctl函数
+
+1.4 相关的命令
+    ipcs -s  显示信号量集信息
+    ipcrm -s 信号量集的id  表示删除指定的信号量集
+    ipcs -a  显示所有的IPC信息
+
+2.网络相关的知识
+2.1 网络基本常识
+(1)网络七层协议模型
+    应用层  表示层  会话层  传输层  网络层 数据链路层  物理层
+(2)基本协议
+   TCP   UDP    IP
+(3)IP地址
+   IP地址  -  网络中的唯一标识，32位整数(IPV4),正在向128位扩展(IPV6)
+   IP地址采用点分十进制表示
+   IP地址分为网络地址和主机地址  A  B  C  D类
+   子网掩码 & IP地址  => 网络地址
+(4)字节序
+   低位内存地址存放低位数据 - 小端系统
+   低位内存地址存放高位数据 - 大端系统
+   网络字节序 - 本质就是大端系统的字节序   
+   主机字节序 - 当前主机的字节序
+(5)端口号
+   IP地址 主要用于定位 主机
+   端口号 主要用于定位 主机中的具体进程
+   unsigned short  0 ~ 65535  其中 0 ~ 1024由系统占用
+
+2.2 基于Socket的通信模型
+(1)一对一的通信模型
+服务器：
+    a.创建socket,使用socket函数
+    b.准备通信地址，使用结构体
+    c.将Socket和通信地址进行绑定,使用bind函数
+    d.进行通信,使用read/write函数
+    e.关闭Socket，使用close函数
+客户端：
+    a.创建socket,使用socket
+    b.准备通信地址，使用结构体
+    c.连接socket和通信地址,使用connect函数
+    d.进行通信,使用read/write函数
+    e.关闭Socket，使用close函数   
+-------------------------------------------------------
+今天内容：
+    (1)网络编程 - 本地通信、TCP通信、UDP通信
+    (2)多线程的初识
+
+1.网络编程
+1.1 相关函数的解析
+(1)socket函数
+   #include <sys/types.h>
+   #include <sys/socket.h>
+   int socket(int domain, int type, int protocol);
+第一个参数：域,主要指定通信协议
+     AF_UNIX/AF_LOCAL - 表示本地通信
+     AF_INET - 表示基于IPV4的网络协议通信
+     AF_INET6 - 表示基于IPV6的网络协议的通信
+第二个参数：通信协议，主要指定通信方式
+     SOCK_STREAM - 数据流通信，主要用于TCP通信协议
+     SOCK_DGRAM - 数据报，主要用于UDP通信协议
+第三个参数：特殊协议,一般给0即可
+返回值：成功返回一个文件描述符，失败返回-1
+函数的功能：主要用于创建socket,用于通信的交流点      
+
+(2)通信地址
+a.通用通信地址,主要用于函数的参数
+   struct sockaddr 
+   {
+       sa_family_t sa_family; //指定域
+       char        sa_data[14];//指定地址
+   };
+
+b.本地通信地址,主要用于本地通信
+   #include <sys/un.h>
+   struct sockaddr_un
+   {
+       sa_family_t  sun_family; //域
+       char         sun_path[]; //路径
+   };   
+
+c.网络通信地址，主要用于网络通信
+   #include <netinet/in.h>
+   struct sockaddr_in
+   {
+      sa_family_t     sin_family;//域
+      in_port_t       sin_port;//端口号
+      struct in_addr  sin_addr;//ip地址
+   };
+   struct in_addr
+   {
+      in_addr_t  s_addr; //ip地址
+   };
+
+(3)bind函数
+   #include <sys/types.h>
+   #include <sys/socket.h>
+   int bind(int sockfd, const struct sockaddr *addr,
+socklen_t addrlen);
+第一个参数：socket描述符,socket函数的返回值
+第二个参数：通信地址
+第三个参数：地址的大小
+函数功能：绑定一个通信地址和socket
+
+(4)connect函数
+   #include <sys/types.h>          /* See NOTES */
+   #include <sys/socket.h>
+   int connect(int sockfd, const struct sockaddr *addr,
+socklen_t addrlen);
+   参数使用方法同上
+
+(5)字节序转换函数
+   #include <arpa/inet.h>
+   uint32_t htonl(uint32_t hostlong);
+ => 将int/long类型数据 由主机字节序转换为网络字节序
+   uint16_t htons(uint16_t hostshort);
+ => 将short类型参数指定的数据，由主机字节序转换为网络
+    字节序
+   uint32_t ntohl(uint32_t netlong);  
+   uint16_t ntohs(uint16_t netshort);
+ => 由网络字节序转换为主机字节序
+
+(6)ip地址转换函数
+   #include <sys/socket.h>
+   #include <netinet/in.h>
+   #include <arpa/inet.h>
+   in_addr_t inet_addr(const char *cp);
+函数的功能：主要将字符串类型IP地址转换为in_addr_t类型
+
+1.2 基于TCP协议的通信模型
+1）模型
+服务器：
+   (1)创建socket,使用socket函数
+   (2)准备通信地址,使用结构体类型
+   (3)进行绑定，使用bind函数
+   (4)进行监听,使用listen函数
+   (5)等待客户端的连接，并且进行响应，使用accept函数
+   (6)进行具体的通信，使用read/write函数
+   (7)关闭socket
+客户端：
+   (1)创建socket，使用socket函数
+   (2)准备通信地址,使用结构体类型
+   (3)进行连接，使用connect函数
+   (4)进行通信,使用read/write函数
+   (5)关闭socket,使用close函数
+
+注意：
+   TCP通信模型中尽可能使用的通信函数：send()/recv()函数
+
+2)函数的解析
+(1)listen函数
+    #include <sys/types.h> 
+    #include <sys/socket.h>
+    int listen(int sockfd, int backlog);
+第一个参数：socket函数的返回值
+第二个参数：等待服务器响应连接的最大数量
+函数的功能：监听要连接服务器的客户端
+
+(2)accept函数  
+   #include <sys/types.h>          /* See NOTES */
+   #include <sys/socket.h>
+   int accept(int sockfd, struct sockaddr *addr, socklen_t *addrlen);
+第一个参数：socket函数的返回值
+第二个参数：通信地址，所响应的客户端地址
+第三个参数：地址的大小
+返回值：成功返回一个描述符，失败返回-1
+函数的功能：响应客户端的连接
+
+注意：
+    socket函数返回的描述符主要用于监听的,accept函数返回的描述符才是真正用于通信的描述符
+
+思考：
+    如何让一个服务器同时响应多个客户端？？
+    多进程
+
+1.3 基于UDP通信模型
+(1)TCP和UDP比较
+a.TCP - 传输控制协议,面向连接的协议
+  特点：全程保持连接，优点在于可以重发一切数据，保证了数据的完整性和准确性，缺点在于服务器端的压力比较大，资源占用率比较高
+
+b.UDP - 用户数据报协议,非面向连接的协议
+  特点：不会全程保持连接,优点在于服务器端的压力比较小，资源占用率比较低,效率比较高,缺点是:不方便重发数据，不保证数据的完整性和准确性    
+     
+(2)通信模型
+服务器：
+    a.创建socket,使用socket函数
+    b.准备通信地址,使用结构体类型
+    c.绑定,使用bind函数
+    d.进行通信，使用read/write/sendto/recvfrom函数
+    e.关闭socket,使用close函数
+客户端：
+    a.创建socket,使用socket函数
+    b.准备通信地址,使用结构体类型(服务器端的地址)
+    c.进行通信，使用read/write/sendto/recvfrom函数
+    d.关闭socket,使用close函数
+
+(3)sendto函数的解析
+    ssize_t sendto(int sockfd, const void *buf, size_t len, int flags,const struct sockaddr *dest_addr, socklen_t addrlen);
+第一个参数：socket函数的返回值
+第二个参数：即将发送数据的首地址
+第三个参数：要发送的数据大小
+第四个参数：发送方式,一般给0即可
+第五个参数：目标地址
+第六个参数：目标地址的大小
+返回值：成功返回发送的数据大小，失败返回-1
+函数的功能：按照指定的位置发送指定的数据内容
+
+(4)recvfrom函数的解析
+   ssize_t recvfrom(int sockfd, void *buf, size_t len, int flags,struct sockaddr *src_addr, socklen_t *addrlen);
+第一个参数：socket描述符
+第二个参数：存放数据的首地址
+第三个参数：读取的数据大小
+第四个参数：读取的方式,给0即可
+第五个参数：用于存储发送方的地址信息
+第六个参数：发送方地址大小
+返回值：成功返回接受到的字节数，失败返回-1
+函数的功能：接受数据，并且保存发送方的地址信息
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,545 @@
+一.控制语句-----goto 语句
+    1.1 语法
+   <<标签名>>
+    goto   标签名;
+    1.2 使用goto 语句 把一个变量的值 从1输出到10 
+    declare
+           var_i   number:=1;
+    begin
+           <<myloop>>
+           if  var_i < 11 then
+                 dbms_output.put_line(var_i);
+                 var_i:=var_i+1;
+                 goto   myloop;
+           end if;  
+    end;
+   1.3  如何退出多重循环? 
+   declare
+          var_x   number;
+          var_y   number;
+   begin
+          var_x:=1;
+          while  var_x < 4  loop
+                  var_y:=1;
+                  while  var_y < 4 loop
+                          dbms_output.put_line(var_y);
+                          if  var_y=2  then
+                                exit;
+                          end if; 
+                          var_y:=var_y+1;
+                  end loop;
+                  var_x:=var_x+1;   
+          end loop;
+   end;  
+
+  /* 通过在内层循环改变外层循环的控制条件 */
+   declare
+          var_x   number;
+          var_y   number;
+   begin
+          var_x:=1;
+          while  var_x < 4  loop
+                  var_y:=1;
+                  while  var_y < 4 loop
+                          dbms_output.put_line(var_y);
+                          if  var_y=2  then
+                                var_x:=4;
+                                exit;
+                          end if; 
+                          var_y:=var_y+1;
+                  end loop;
+                  var_x:=var_x+1;   
+          end loop;
+   end; 
+
+/* exit  标签名 只能在plsql中使用  */
+   begin
+           <<outerloop>>  
+           for var_x in 1..3 loop
+                  for var_y in 1..3 loop
+                        dbms_output.put_line(var_y);
+                        if var_y=2 then
+                             exit  outerloop; 
+                        end if; 
+                  end loop; 
+           end loop;
+   end;
+   
+
+     begin
+           for var_x in 1..3 loop
+                  for var_y in 1..3 loop
+                        dbms_output.put_line(var_y);
+                        if var_y=2 then
+                             goto  abcloop; 
+                        end if; 
+                  end loop; 
+           end loop;
+           <<abcloop>> 
+           NULL;  
+   end;
+
+二.plsql 中如何使用sql语句
+    2.1 select 语句要和into 结合使用 
+    2.2 DML (insert  delete  update)
+          TCL   (commit  rollback  savepoint)
+          可以直接在plsql程序中使用 
+    2.3 DDL 不能直接在plsql程序中使用  需要使用动态sql
+三.动态sql 
+    3.1  概念    
+    在程序执行的过程中 sql语句可以根据需求发生改变 
+    begin
+            create table   emp1412(id number);
+    end;
+    3.2 如何实现?
+    只要把sql语句变成字符串  即可
+    declare
+            sqlstr    varchar2(100); 
+    begin
+            sqlstr:='create table   emp1412(id number)';
+            sqlstr:=replace(sqlstr, ')', ','); 
+            sqlstr:=sqlstr||'name varchar2(30))';
+            dbms_output.put_line(sqlstr); 
+            execute   immediate  sqlstr;
+    end;
+   3.3  DML 的动态sql ?
+    s_dept 
+    begin 
+        insert  into  s_dept values(200,'test200',1);
+        commit;
+    end;
+    /* 字符串中的单引号 需要使用两个单引号表达 */
+     declare
+         sqlstr   varchar2(100);
+     begin 
+        sqlstr:='insert  into  s_dept values(200,''test200'',1)';
+        execute  immediate sqlstr; 
+        commit;
+    end;
+  /* 把数据存入 变量 然后使用占位符号 可以简化字符中
+      的单引号的问题 */
+     declare
+         sqlstr   varchar2(100);
+         id    number:=1234;
+         name varchar2(30):='test1234';
+         rid    number:=1;
+     begin 
+        sqlstr:='insert  into  s_dept values(:b0,:b1,:b2)';
+        execute  immediate sqlstr using id,name,rid; 
+        commit;
+    end;   
+
+四.游标  cursor 
+    4.1 概念
+    用来存放多条数据的一个结果集 
+    有名游标 
+    匿名游标(系统给这个游标起了一个名叫sql)
+    4.2 游标的使用步骤 
+         定义游标  
+                declare
+                    cursor  游标名  is   select语句;    
+                begin
+         打开游标 
+                open    游标名;
+         提取数据处理数据 
+                fetch    游标名  into  变量;
+                fetch    游标名  into  变量;   
+         关闭游标  
+                close    游标名;
+     4.3  定义一个游标 用来存放 s_emp 表中的id  first_name
+           salary数据 。并且提取游标的前两条数据 并打印。
+           declare 
+                  cursor  empcursor  is select id,first_name,
+                         salary from s_emp;
+                  var_emp   empcursor%rowtype;  
+           begin
+                   open    empcursor;
+                   fetch    empcursor into var_emp;
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   fetch    empcursor into var_emp;
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   close    empcursor;  
+           end;
+      4.4 如何提取游标中所有的数据?
+           游标的属性:
+           游标名%found  当提取游标数据时  如果提取到了新数据
+                  则这个属性返回TRUE。如果没有提取到新数据则
+                  这个属性返回FALSE。这个属性使用需要两个前提 
+                  一个是游标必须处于打开状态 否则返回非法游标,
+                  第二个是游标必须fetch 否则返回NULL。
+           游标名%notfound  当提取游标数据时  如果提取到了新
+                  数据则这个属性返回FALSE。如果没有提取到新数据
+                  则这个属性返回TRUE。这个属性使用需要两个前提 
+                  一个是游标必须处于打开状态 否则返回非法游标,
+                  第二个是游标必须fetch 否则返回NULL。 
+          /* 简单循环 结合notfound属性  */ 
+           declare 
+                  cursor  empcursor  is select id,first_name,
+                         salary from s_emp;
+                  var_emp   empcursor%rowtype;  
+           begin
+                   open    empcursor;
+                   loop
+                   fetch    empcursor into var_emp;
+                   /* 如何终止循环? */ 
+                   exit  when  empcursor%notfound; 
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   end loop;
+                   close    empcursor;  
+           end;
+      /* 把上面的程序 改成while循环 结合found属性 */
+           declare 
+                  cursor  empcursor  is select id,first_name,
+                         salary from s_emp;
+                  var_emp   empcursor%rowtype;  
+           begin
+                   open    empcursor;
+                   fetch    empcursor into var_emp;  
+                   while    empcursor%found loop
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   fetch    empcursor into var_emp; 
+                   end loop;
+                   close    empcursor;  
+           end; 
+
+    4.5 游标的其它属性
+        游标名%isopen   游标是否处于打开状态 打开返回TRUE
+                否则返回FALSE。
+                打开的游标不能再打开  关闭的游标不能再关闭
+        游标名%rowcount  游标指针偏移量 
+   4.6 for循环如何遍历游标(智能循环)
+          自动定义变量  自动打开游标 自动提取数据 自动关闭游标  
+           declare 
+                  cursor  empcursor  is select id,first_name,
+                         salary from s_emp;
+           begin 
+                   for var_emp in  empcursor  loop
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   end loop;                 
+           end;                                        
+   4.7 带参游标 
+         一个游标定义时 可以设计参数 并且游标的参数可以在
+               select语句中使用。
+         游标的参数不能加长度修饰  但可以使用%type。
+         打开游标时 需要传入实参。 
+           declare 
+                  cursor  empcursor(var_id  number)  is select 
+                      id,first_name, salary from s_emp 
+                         where id>var_id;
+                  var_emp   empcursor%rowtype;  
+           begin
+                   open    empcursor(15);
+                   fetch    empcursor into var_emp;  
+                   while    empcursor%found loop
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);
+                   fetch    empcursor into var_emp; 
+                   end loop;
+                   close    empcursor;  
+           end; 
+
+
+           declare 
+                  cursor  empcursor(var_id  number)  is select 
+                      id,first_name, salary from s_emp 
+                         where id>var_id;
+           begin 
+                   for var_emp in empcursor(20) loop
+                   dbms_output.put_line(var_emp.id||':'||
+                   var_emp.first_name||':'||var_emp.salary);           
+                   end loop;              
+           end; 
+ 4.8  参考游标（引用游标） ref cursor
+        游标对应的查询语句 是一条字符串 
+        4.8.1 参考游标的使用步骤
+        定义参考游标  类型 
+               type  参考游标类型名  is  ref  cursor;
+        使用参考游标类型  定义参考游标变量 
+               变量名   参考游标类型;
+        打开游标变量 把这个变量关联到对应的字符串 
+               open    变量名    for  sqlstr;
+               如果sqlstr 有占位符 则需要使用using传入值 
+        4.8.2 使用参考游标 把这个字符串对应的内容查询出来
+        sqlstr:='select * from s_emp where id>20';
+        declare
+               sqlstr   varchar2(100);
+               type   myrefcursor   is ref  cursor;
+               empcursor   myrefcursor;  
+               var_emp       s_emp%rowtype;   
+        begin
+                sqlstr:='select * from s_emp where id>20';
+                open   empcursor  for  sqlstr;
+                loop
+                       fetch  empcursor  into  var_emp;
+                       exit   when  empcursor%notfound; 
+                       dbms_output.put_line(var_emp.id||':'||
+                            var_emp.first_name);                         
+                end  loop;
+                close   empcursor;  
+        end;    
+
+        declare
+               sqlstr   varchar2(100);
+               type   myrefcursor   is ref  cursor;
+               empcursor   myrefcursor;  
+               var_emp       s_emp%rowtype; 
+               id       number:=15;    
+        begin
+                sqlstr:='select * from s_emp where id>:b0';
+                open   empcursor  for  sqlstr using id;
+                loop
+                       fetch  empcursor  into  var_emp;
+                       exit   when  empcursor%notfound; 
+                       dbms_output.put_line(var_emp.id||':'||
+                            var_emp.first_name);                         
+                end  loop;
+                close   empcursor;  
+        end;
+4.9  匿名游标 
+      begin
+          update  s_emp set  salary=salary+100 where id=1;
+          dbms_output.put_line('c='||sql%rowcount);
+          commit;        
+      end;  
+
+      begin
+          update  s_emp set  salary=salary+100 where id>1;
+          dbms_output.put_line('c='||sql%rowcount);
+          commit;        
+      end;  
+五.plsql 中的异常处理 
+    exception  
+    5.1 错误
+    编译时 
+    运行时 
+    5.2 plsql 中的默认的错误处理 (程序终止)
+    declare
+           var_name   s_emp.first_name%type;
+    begin
+            dbms_output.put_line('app start');
+            select   first_name into  var_name 
+                   from s_emp  where id=111;
+            dbms_output.put_line(var_name);
+            dbms_output.put_line('app end');
+    end;
+   5.3 使用exception块进行错误处理
+    declare
+           var_name   s_emp.first_name%type;
+    begin
+            dbms_output.put_line('app start');
+            select   first_name into  var_name 
+                   from s_emp  where id<111;
+            dbms_output.put_line(var_name);
+            dbms_output.put_line('app end');
+    exception
+            when    others   then
+            dbms_output.put_line('have exception');        
+    end;  
+   5.4 others  的处理方式过于粗糙  不够精确 没有针对
+         具体的问题 作出具体的处理。
+    declare
+           var_name   s_emp.first_name%type;
+    begin
+            dbms_output.put_line('app start');
+            select   first_name into  var_name 
+                   from s_emp  where id=111;
+            dbms_output.put_line(var_name);
+            dbms_output.put_line('app end');
+    exception
+            when   no_data_found   then
+            dbms_output.put_line('no emp found');
+            when    too_many_rows  then
+            dbms_output.put_line('too many emp'); 
+            when    others   then
+            dbms_output.put_line('have exception');                   
+    end;  
+
+           我们的操作可能会出现哪些问题   这些都可以在
+           exception  块中进行when操作 
+  5.5 用户自定义异常 
+       定义异常 
+              使用异常  把程序中例外情况一一表达清楚
+       根据条件  抛出异常
+              满足什么样的条件  抛出什么样的异常 
+       捕获异常
+              在exception块 对异常进行捕获 
+       处理异常 
+               根据不同的异常 作出不同的处理 
+       declare
+               too_many_order    exception;
+               too_many_emp      exception;
+       begin
+               if   1=2   then
+                     raise   too_many_order;
+               end if;
+               if   1=2   then
+                     raise   too_many_emp;
+               end if;
+       exception
+               when     too_many_order   then
+               dbms_output.put_line('too many order');
+               when     too_many_emp     then
+               dbms_output.put_line('too many emp');     
+       end;
+ 六.过程   procedure
+     6.1 语法
+     create   or  replace   procedure  过程名(参数列表)
+        is
+        begin
+        exception
+        end;   
+    6.2 写一个匿名块  定义两个整数变量  赋值  然后打印
+         这两个变量的最大值。
+      declare
+             var_x    number:=20;
+             var_y    number:=99; 
+      begin
+              if var_x < var_y  then
+                   dbms_output.put_line(var_y); 
+              else 
+                   dbms_output.put_line(var_x);
+              end if;              
+      end;
+
+      create  or replace   procedure   getmax(
+          var_x   number,var_y   number)
+      is
+             /* 这是申明区  */
+      begin
+              if var_x < var_y  then
+                   dbms_output.put_line(var_y); 
+              else 
+                   dbms_output.put_line(var_x);
+              end if;              
+      end;
+
+    SQL>show  errors   可以显示错误 
+    6.3  调用过程   使用匿名块 
+    declare
+            var_x     number:=1;
+            var_y     number:=99;
+    begin
+            getmax(100,200);
+            getmax(300,400);
+            getmax(var_x,var_y); 
+    end; 
+
+    create  or replace   procedure   getmax(
+          var_x   number:=0,var_y   number:=1)
+      is
+             /* 这是申明区  */
+      begin
+              if var_x < var_y  then
+                   dbms_output.put_line(var_y); 
+              else 
+                   dbms_output.put_line(var_x);
+              end if;              
+      end;
+    /
+     declare
+            var_x     number:=1;
+            var_y     number:=99;
+    begin
+            getmax(100);
+            getmax();
+            getmax(var_x,var_y); 
+    end; 
+
+    /* 查看存储过程 源代码 */
+   select text from user_source  where name='GETMAX';
+
+   6.4  查看存储过程
+   desc   过程名;
+   desc   getmax;
+   SQL> desc getmax;
+PROCEDURE getmax
+ Argument Name                  Type            In/Out Default?
+ ------------------------------ --------------------- ------ --------
+ VAR_X                          NUMBER                  IN     DEFAULT
+ VAR_Y                          NUMBER                  IN     DEFAULT
+
+ 存储过程的参数的名字
+ 存储过程参数的类型 
+ 参数的模式:
+        in     默认的模式  只负责给存储过程传入值 
+        out  只负责给存储过程 传出参数
+        in  out  既负责传入值 又负责传出值 
+ 参数的缺省值   有缺省值就有default   
+ 6.5 参数的模式
+        in     默认的模式  只负责给存储过程传入值 
+        out  只负责给存储过程 传出参数
+        in  out  既负责传入值 又负责传出值 
+            带有out修饰的参数 必须是变量
+       void  addInt(int* x){
+              *x=*x+100;
+      }
+      int main(){
+            int   x=1;
+            addInt(&x);
+            x             
+      }
+
+     设计一个存储过程  有三个整数参数  打印前两个参数的
+            最大值  并且 把前两个参数的和 存入第三个参数中。
+     create  or replace   procedure  proGetMaxAndSum(
+        var_x  number,var_y  number,var_z  out number)
+        is
+        begin
+                if  var_x < var_y   then
+                      dbms_output.put_line(var_y);
+                else
+                      dbms_output.put_line(var_x); 
+                end if;
+                var_z:=var_x+var_y; 
+        end;
+     
+     declare
+            var_z   number:=0;
+     begin
+             proGetMaxAndSum(1,9526,var_z);
+             dbms_output.put_line(var_z); 
+     end;
+   设计一个存储过程  有二个整数参数  打印这两个参数的
+            最大值  并且 把两个参数的和 存入第二个参数中。
+   create  or replace   procedure  proGetMaxAndSum(
+        var_x  number,var_y  in  out number)
+        is
+        begin
+                if  var_x < var_y   then
+                      dbms_output.put_line(var_y);
+                else
+                      dbms_output.put_line(var_x); 
+                end if;
+                var_y:=var_x+var_y; 
+        end;
+  /* 参数的位置赋值调用 */
+   declare
+          var_y  number:=1; 
+   begin
+           proGetMaxAndSum(9526,var_y);
+           dbms_output.put_line(var_y); 
+   end;
+   /* 参数的名字赋值 调用  */
+   declare
+          var_y  number:=1; 
+   begin
+           proGetMaxAndSum(var_y=>var_y,var_x=>9526);
+           dbms_output.put_line(var_y); 
+   end;
+6.6 设计一个存储过程  有两个参数 
+      第一个参数代表从1加到的数  1+2+...+n
+      第二个参数用来存放前n项的和 
+
+      getNumN(10,x);    x     55
+      getNumN(100,x);  x     5050 
+
+
+
+
+
+

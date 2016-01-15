@@ -1,0 +1,56 @@
+注意：OnCreateClient虚函数的两个参数传的是什么？
+LPCREATESTRUCT lpcs, CCreateContext* pContext
+答：第一个参数lpcs保存的为::CreateWindowEx函数的全部12个参数
+    第二个参数pContext保存的为 &cct
+
+
+为什么不调用父类的虚函数？
+答：因为父类虚函数也会创建视图窗口。
+
+一 MFC的文档
+ 1 相关问题
+   MFC的文档提供对于数据管理，封装数据和视图窗口之间的操作。
+   CDocument - 父类CCmdTarget
+ 2 创建窗口过程
+   2.1 调用框架类成员函数LoadFrame创建主框架窗口
+   2.2 在处理框架窗口的WM_CREATE消息时，创建视图窗口
+   2.3 在处理视图窗口的WM_CREATE消息时，将视图类对象和文档类对象
+       建立绑定关系。
+      m_viewList.AddTail(pView);
+         //文档类对象用一个链表成员保存和它绑定的视图类对象
+      pView->m_pDocument = this;
+         //视图类对象用一个普通成员变量保存和它绑定的文档类对象
+
+      经过分析：文档类对象用一个链表成员保存和它绑定的视图类对象，
+               说明一个文档类对象可以对应（绑定）多个视图类对象
+
+               视图类对象用一个普通成员变量保存和它绑定的文档类对
+               象说明一个视图类对象只能对应（绑定）一个文档类对象
+ 3 对象关系图
+   theApp
+    |-->m_pMainWnd(框架类对象地址pFrame)
+         |-->m_pViewActive(视图类对象地址pView)
+               |-->m_pDocument(保存文档类对象地址)
+                    |-->m_viewList(保存关联的所有视图类对象地址)
+ 4 文档类和视图类关系
+   4.1 视图类成员函数  GetDocument() - 获取文档类对象地址
+   4.2 文档类成员函数  UpdateAllViews() - 
+                           刷新所有和文档类对象关联视图类对象
+   4.3 视图类成员虚函数 OnUpdate(..) - 
+                           只要UpdateAllViews()被调用所有视图类
+                           的OnUpdate虚函数被调用
+
+ 5 命令消息（WM_COMMAND）的处理顺序
+   View-->Document-->Frame-->App
+      （CFrameWnd::OnCmdMsg 虚 函数内部执行顺序决定 )
+
+
+
+
+
+   
+
+
+
+
+

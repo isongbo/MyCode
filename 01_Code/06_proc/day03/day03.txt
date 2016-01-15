@@ -1,0 +1,162 @@
+﻿一.远程数据库连接 -----多数据库连接
+    一个本地 + 一个远程 
+    使用 using 区分具体的数据库
+    使用 at 来区分具体的数据库连接
+    然后在每个操作前 加 exec  sql  at:标签名  sql操作
+
+    本地数据库是db20   在这个数据的tnsnames.ora 中有两个
+           远程数据库描述 分别是 db23   和 db26。这三个数据
+           的用户名密码分别是  openlab/open123    
+           openlab/abc123     scott/tiger 
+          要求写一个proc程序  查询db20上 s_emp 表中id=2
+          的 first_name   并输出。 把db23 数据库上s_emp
+          表中的 id=20 的 salary 更新成 12500  。把db26
+          上的id=5的first_name 查询出来。
+
+二.远程数据库连接 -------  database link 
+    2.1 建立 database link
+    create  database  link   链接名  connect  to 用户名
+            identifiecdd by  密码  using  '远程数据库描述';
+    建立 330  到 730 的database link
+    create   database link   db330todb730link
+       connect to openlab  identified by  open123
+       using 'db730';    
+
+       本地数据库是db20   在这个数据中有两个database link
+           分别叫db20todb23link  db20todb26link。
+          本地数据库的用户名密码是 openlab/open123。
+          要求写一个proc程序  查询db20上 s_emp 表中id=2
+          的 first_name   并输出。 把db23 数据库上s_emp
+          表中的 id=20 的 salary 更新成 12500  。把db26
+          上的id=5的first_name 查询出来。
+
+三.proc 中的错误处理 
+    3.1 proc中的局部错误处理
+    sqlca.sqlcode
+    转账的实现:
+    exec sql  update account set money=money-5000
+            where  id='A';
+    int  fa=sqlca.sqlcode;
+    exec sql  update account@db20to26  set money=
+            money+5000  where id='C';
+    int  fb=sqlca.sqlcode;
+    if(fa==0&&fb==0){
+           exec sql commit;
+    }else{
+           exec sql rollback;
+    }    
+
+    3.2 proc 中全局的错误处理
+    exec sql  whenever   条件   动作;
+    条件:sqlerror   notfound  sqlwarning  
+    动作:do   函数名();    调用一个函数  
+            do   break;       终止一个循环 
+            continue;
+            goto  标签;
+            stop;  
+    
+  当sql出现问题时  就会向上找一个对应的whenever语句 
+         没有找到就采用默认的忽略错误的处理方式。如果找
+         到对应的whenever语句 就进行相应的处理。
+
+四.proc 中的数据处理 
+    4.1 使用单个变量操作单行单列
+     exec sql select  字段名 into  :宿主变量
+             from  表名  where 条件;
+    4.2 使用多个变量操作 单行多列
+    exec sql select  字段名1,字段名2 into  :宿主变量,:宿主变量
+             from  表名  where 条件;  
+    4.3 使用结构体 操作单行多列
+   struct {
+           int  id;
+           char name[30];
+           double salary;    
+   }emp;
+
+   struct  emp{
+           int  id;
+           char name[30];
+           double salary;    
+   };
+
+    struct  emp{
+           int  id;
+           char name[30];
+           double salary;    
+    }emp;
+
+     typedef struct  emp{
+           int  id;
+           char name[30];
+           double salary;    
+    }emp;
+    4.4  使用结构体数组 操作 多行多列
+    使用结构体数组  操作s_emp 表中的 id first_name salary
+    把这些数据放入一个提前建立好的表中。
+    
+    4.5使用proc中的游标 来操作多行多列
+        4.5.1 游标的使用步骤
+        定义游标
+               exec sql declare 游标名  cursor  for  select语句;
+        打开游标
+               exec sql  open   游标名;
+        提取数据  处理数据
+               exec sql  fetch   游标名 into  :结构体变量;
+        关闭游标  
+               exec sql  close   游标名;
+        4.5.2  使用proc连接数据库   然后把s_emp 表中的
+        id  first_name  salary  放入一个游标中,提取游标的
+        前两条数据  并输出这两条数据到屏幕。 
+        
+        4.5.3  如何提取游标中所有的数据 
+        故意出错机制
+        exec sql  whenever notfound do  break;
+        4.5.4  滚动游标   scroll cursor  
+        可以不按照顺序 来提取数据(随机提取数据)
+        fetch  last       提取最后一行对应的数据
+                   first      提取第一行对应的数据
+                   prior     提取当前行的前一行
+                   next      提取当前行的后一行
+                   current  提取当前行
+                   relative  n   相对于当前的第几行
+                                  n=1 就是 next
+                                  n=-1 就是 prior
+                   absolute  n    绝对的第几行 
+五.动态sql 
+    5.1 proc中的第一种动态sql
+    不能是select语句
+    不能有占位符
+   
+    exec sql  execute  immediate  :sqlstr;             
+    
+    5.2 第二种动态sql
+    可以有占位符
+    不能是select语句 
+     
+    "insert into s_dept values(:b0,:b1,:b2)"
+    字符串中 带有占位符  需要先进行预处理
+    exec sql prepare   s  from  :sqlstr;
+    exec sql execute   s  using  :变量1,变量2,变量3； 
+    5.3  第三种动态sql 
+    可以有占位符
+    只能是select语句
+    
+    char sqlstr[100]="select id,first_name,salary 
+        from s_emp where  id>:b0";
+    /* 预处理 */
+    exec sql  prepare  s  from :sqlstr;
+    /* 定义一个游标 关联到s */
+    exec sql  declare  empcursor  cursor for  s;
+    /* 打开游标时 传入实参  */
+    exec sql open  empcursor  using  :变量; 
+    
+
+
+
+
+
+
+
+
+
+   

@@ -1,0 +1,52 @@
+//以WM_CREATE消息为例，捎带想着点WM_COMMAND
+AfxWndProc(...)
+{
+  CWnd* pWnd = CWnd::FromHandlePermanent(hWnd);
+            //获取和hWnd绑定在一起的框架类对象地址pFrame===pWnd 
+  AfxCallWndProc(pWnd..)//参数的pWnd===pFrame
+  {
+    pWnd->WindowProc(...)//函数内部this为pWnd===pFrame
+    {
+      OnWndMsg(...)//函数内部this为pWnd===pFrame
+      {
+	AFX_MSGMAP* pMessageMap = GetMessageMap();
+                 //获取本类静态变量地址（链表头节点）
+        AFX_MSGMAP_ENTRY* lpEntry;//和静态数组每个元素类型一样。
+
+        for (; pMessageMap != NULL;//此for循环,就是在遍历链表
+		pMessageMap = pMessageMap->pBaseMap)
+        {
+          lpEntry=AfxFindMessageEntry(pMessageMap->lpEntries,
+					WM_CREATE,...);
+             //拿着WM_CREATE消息到数组中匹配每个元素，一旦找到
+             //返回找到数组元素的地址，没找到返回NULL
+          if( lpEntry != NULL )
+          {
+             goto LDispatch;//一旦找到跳出for循环（不再遍历）
+          }
+        }
+        LDispatch:
+          union MessageMapFunctions mmf;
+	  mmf.pfn = lpEntry->pfn;
+           //将OnZjw函数地址给联合体所有成员赋值
+          int nSig = lpEntry->nSig;//AfxSig_lwl
+          switch (nSig)
+	  {
+            ....
+	    case AfxSig_lwl:
+		lResult = (this->*mmf.pfn_lwl)(wParam, lParam);
+		break;
+            ....
+          }
+
+         
+      }
+    }
+  }
+}
+
+
+
+
+
+

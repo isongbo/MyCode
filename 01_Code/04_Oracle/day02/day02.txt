@@ -1,0 +1,376 @@
+一.排序
+   1.1 概念
+   按照一定的排序标准 按照一定的排序方式
+       把数据排列
+   1.2 语法
+   from  表名
+       where 条件
+           order by 排序标准 排序方式
+               ,排序标准 排序方式;
+   排序方式:
+       升序  默认的顺序 asc 自然顺序  字典顺序
+       降序  desc  
+   1.3 举例
+   列出s_emp 表中id  first_name salary
+       按照工资排序
+   select  id,first_name,salary
+       from s_emp 
+           where 1=1
+               order by salary;              
+   1.4 多字段排序
+      当第一排序字段的值相同时 可以启用
+          第二排序字段对数据进行排列
+      列出s_emp 表中id  first_name salary
+       按照工资排序 工资相同就启用id降序
+       排列。
+      select  id,first_name,salary
+          from s_emp 
+              order by salary asc,id desc;
+   1.5 NULL 值在排序中的处理
+      最大值处理
+      按照manager_id 排序 显示id manager_id
+      select  id,manager_id 
+          from  s_emp  
+              order by manager_id;
+ 二.单行函数
+    2.1 概念
+       单行函数:对sql语句的每一行数据 
+           都做处理 并且针对每一行都
+           返回结果。sql语句影响多少行
+           就返回多少个结果。
+       组函数:对sql语句影响的所有数据
+           统一处理 最终返回一个结果。
+    2.2 举例
+       upper(par1) 把字符串处理成大写
+       select first_name,upper(first_name)
+           from s_emp where id=1;
+       select first_name,upper(first_name)
+           from s_emp where id>1;                    
+       select first_name,upper(first_name)
+           from s_emp where id<1; 
+        
+      count(par1) 统计数据的个数
+        select  count(first_name)
+           from s_emp where id=1;              
+        select  count(first_name)
+           from s_emp where id >1;
+        select  count(first_name)
+           from s_emp where id <1;
+    2.3 处理字段串的单行函数
+     upper(par1) 把字符串处理成大写
+       select first_name,upper(first_name)
+           from s_emp where id=1;
+       测试表 dual(单行单列的表)
+       select * from dual; 
+       select upper('hello') from dual;       
+     lower(par1) 把字符串处理成小写
+       select lower('HellO') from dual;      
+     initcap(par1) 把字符串每个单词首字母
+                   变大写
+       select  initcap('one world one dream') 
+           from dual;
+     length(par1) 求字符串的长度
+       select length('hello') from dual;
+     concat(par1,par2) 连接两个字符串并
+                       返回
+       select concat('hello','world') 
+           from dual;                  
+       select 'ha'||'hb'||'hc' from dual;
+       select concat(concat('ha','hb'),
+            'hc') from dual;
+     substr(par1,par2,par3)
+       截取字符串 par1要处理的字符串
+       par2 从什么位置开始截取 从1开始
+          编号1代表第一个字符 也可以是
+          负数 -1代表最后一个字符 
+       par3 截取的数据长度
+       
+       select substr('hello',0,2) from dual;  
+       select substr('hello',1,2) from dual; 
+       
+       把s_emp 表中的first_name 显示出来 
+          并且显示first_name 的前三个字符
+          select first_name,
+            substr(first_name,1,3)
+              from s_emp;
+       把s_emp 表中的first_name 显示出来 
+          并且显示first_name 的后三个字符 
+          select first_name,
+            substr(first_name,-3,3)
+              from s_emp;
+    nvl(par1,par2) 可以处理任何类型
+          但par1,par2的类型要保持一致
+    replace(par1,par2,par3)
+        par1要处理的字符串
+        par2 par1中的一部分值
+        par3 是要替换成的内容
+    select  replace('one world one dream'
+        ,'one','my')
+           from dual;    
+    2.3 处理数字的函数
+    round(par1,par2) 四舍五入函数
+        par1要四舍五入的数据
+        par2 处理的精度 默认是0 
+      select  round(3.56) from dual;
+      /* 保留一位小数 对第二位小数四舍五入*/
+      select  round(3.56,1) from dual;
+      /* 对小数点前的一位进行四舍五入 */
+      select  round(3.56,-1) from dual;
+    trunc(par1,par2) 截取函数 
+        par1要截取的数据
+        par2 处理的精度 默认是0 
+      select  trunc(3.56) from dual;
+      /* 保留一位小数 对第二位截取 */
+      select  trunc(3.56,1) from dual;
+      /* 对小数点前的一位进行截取 */
+      select  trunc(3.56,-1) from dual;      
+      select  trunc(9.56,-1) from dual;    
+   2.4 格式转换函数
+      to_char(par1) 把par1变成字符串类型 
+      列出s_emp 表中的id first_name 
+        manager_id 如果manager_id 是NULL
+        就显示成BOSS
+      select  id,first_name,
+        nvl(to_char(manager_id),'BOSS')
+          from s_emp;  
+      to_number(par1) 把par1对应的数字字
+                    符串变成number
+        select  id,first_name 
+          from s_emp where id=12;
+        select  id,first_name 
+          from s_emp where id='12';  
+        select  id,first_name 
+          from s_emp where id=
+            to_number('12');  
+    2.5 格式显示函数
+       今天主要用来处理数字
+       to_char(par1,par2)
+         par1是要处理的数字
+         par2是显示的格式 格式字符串以
+           fm开头
+           9   用在小数点前代表0-9的任意数字
+               用在小数点后代表1-9的任意数字
+           0   用在小数点前代表强制显示前导零
+               12345  012,345
+               8899   008,899
+               小数点后 代表0-9的任意数字
+           $   美元符号
+           ,   千位分割符号
+           .   小数点                
+          
+        select to_char(salary,
+            'fm099,999.99') from s_emp;
+        select to_char(salary,
+            'fm$099,999.00') from s_emp;      
+   2.6 函数嵌套
+      把一个函数的返回值 作为另一个函数
+          的参数。
+      concat(concat('a','b'),
+        concat('c','d'))                                     
+      nvl(to_char(manager_id),'BOSS')
+      
+      把s_emp 表中的 first_name 和 
+         first_name的后三个字符显示
+         substr   length
+      select first_name,
+        substr(first_name,length(first_name)-2,3) 
+          from s_emp;        
+          
+  三.多表查询
+     3.1 为什么要有多表查询
+     因为需要的数据分布在多张表中
+     3.2 语法
+     把员工的 first_name 和对应的部门编号
+         查询出来。
+     select  first_name,dept_id
+         from s_emp;
+     在上面的查询基础上显示部门名
+     s_emp  员工表
+       first_name   员工名 
+       dept_id      部门编号
+     s_dept 部门表
+        ID          部门编号 
+        NAME        部门名
+    /* 当两张表中有同名字段时 加表名区分 */    
+    select  first_name,dept_id,name
+        from s_emp,s_dept
+            where dept_id=s_dept.id; 
+     
+    语法:
+    select  字段1,字段2     
+        from 表1,表2 
+            where 表的连接条件;
+    3.3 练习 多表查询
+    s_dept               s_region
+    id     部门编号      id   地区编号
+    name   部门名        name 地区名
+    region_id 地区编号        
+    写一个查询 列出部门的名字和
+        对应的地区名                
+    select s_dept.name,s_region.name
+        from s_dept,s_region
+            where region_id=s_region.id;
+    3.4 使用表的别名简化查询
+    select d.name,r.name
+        from s_dept d,s_region r
+            where region_id=r.id;       
+    3.5 列出每个员工的first_name 和对应的
+       部门名 以及对应的地区名。
+    select first_name,d.name,r.name   
+       from s_emp e,s_dept d,s_region r
+           where e.dept_id=d.id and 
+           d.region_id=r.id;
+    /* 叫name的这一列 一行最多显示15字符*/       
+    col  name for a15;                  
+    /* 在执行一次当前的sql */
+    SQL>/ 
+    3.6 上面的查询都有一个共同的特点
+    员工表和部门表 dept_id=s_dept.id
+    部门表和地区表 region_id=s_region.id
+    员工表 和 部门表 以及地区表   
+     dept_id=s_dept.id and 
+           region_id=s_region.id 
+    连接表的关系 都是使用等号连接的
+        这种表连接叫等值连接。
+    如果不使用等号做连接 则称之为非
+        等值连接。
+    3.7 非等值连接
+    salgrade  工资级别表;
+    SQL> desc salgrade;
+    Name
+ -------------------
+ GRADE    工资级别
+ LOSAL    这个级别对应的低工资
+ HISAL    这个级别对应的高工资
+    写一条sql 列出每个员工的first_name
+      工资 和 工资对应的工资级别。  
+    select first_name,salary,grade
+        from s_emp,salgrade
+            where salary between losal
+            and hisal;     
+   3.8 一种特殊的连接 ----自连接
+     s_emp 表中 有两种业务含义的数据
+         要把其中的一层找出来。
+     领导 
+     普通员工
+     id    manager_id
+     100    100
+     101    100
+     102    100
+     如果有一个员工的manager_id 是你的id 
+         则你就是领导。
+     找出s_emp 表中的所有领导?
+     select id,first_name
+         from s_emp 
+             where manager_id=id;    
+     
+     select distinct m.id,m.first_name
+         from  s_emp e,s_emp m
+             where e.manager_id=m.id;     
+    3.9 总结
+    表连接:
+        等值连接
+        非等值连接
+        自连接
+    这三种连接都有一个共同的特点 符号连接
+        条件的数据被选中 不符合连接条件的
+        数据被过滤掉。这统称为内连接。     
+   
+   
+    如何找出剩下的17(25-8)普通员工?
+   四.外连接
+      4.1 概念
+      外连接的结果集 等于内连接的结果集
+          加上匹配不上的记录。
+          (一个也不能少)
+      4.2 如何找回被过滤掉的数据
+      (+)  (+)字段对面的表的数据全部被
+          匹配出来。
+      select distinct m.id,m.first_name
+         from  s_emp e,s_emp m
+             where e.manager_id(+)=m.id;            
+      如何配出的数据?
+      NULL 记录匹配
+      select distinct m.id,m.first_name
+         from  s_emp e,s_emp m
+             where e.manager_id(+)=m.id
+             and e.manager_id is null; 
+      4.3 列出每个部门的名字 和 部门对应
+         的地区的名字。
+         select d.name,r.name
+             from s_dept d,s_region r
+                 where region_id=r.id;
+         公司的业务扩展了 增加了新的部门
+         insert into s_dept values(
+             200,'test200',NULL);
+         commit;    
+         列出每个部门的名字 和 部门对应
+         的地区的名字。没有地区编号的部门
+         也要显示。
+         select d.name,r.name
+             from s_dept d,s_region r
+                 where region_id=r.id(+);
+      4.4 把s_emp 中的first_name salary
+         以及salary对应的工资级别显示
+       select first_name,salary,grade 
+           from s_emp,salgrade
+               where salary between 
+               losal and hisal;  
+       给id=20的人涨工资 涨成12500
+       update s_emp set salary=12500
+           where id=2;
+       commit;    
+       找出所有的员工 没有工资级别的
+           员工也要显示。
+       select first_name,salary,grade 
+           from s_emp,salgrade
+               where salary between 
+               losal(+) and hisal(+);     
+     4.5 外连接
+         等值连接
+         非等值连接
+         自连接
+         
+         (+) NULL 记录匹配
+  五.SQL99 中的内外连接
+     5.1 SQL99中的内连接
+     from a表 join b表 on 表的连接条件
+         where 过滤条件;
+     from a表 inner join b表 on 表的连接条件
+         where 过滤条件;                  
+     列出每个部门的名字 和 部门对应地区名
+       select d.name,r.name 
+           from  s_dept d,s_region r
+               where d.region_id=r.id;   
+       select d.name,r.name 
+           from  s_dept d join s_region r
+               on d.region_id=r.id; 
+     5.2 SQL99外连接
+        from a表 left outer join b表
+            on 连接条件 where 过滤条件;
+        from a表 right outer join b表
+            on 连接条件 where 过滤条件;      
+        from a表 full outer join b表
+            on 连接条件 where 过滤条件; 
+     a表 left outer join b表 就代表a表
+        发起连接,就代表把a表中的数据全部
+        匹配出来 同样的使用NULL匹配出来的
+        
+     列出每个部门的名字 和 部门对应地区名   
+         没有地区编号的也要显示。
+         select  d.name,r.name
+             from s_dept d,s_region r
+                 where d.region_id=r.id(+);    
+         select  d.name,r.name
+             from s_dept d left outer 
+             join s_region r
+                 on d.region_id=r.id; 
+         select  d.name,r.name
+             from  s_region r right outer 
+             join s_dept d
+                 on d.region_id=r.id;
+     5.3 找出所有的普通员工 17
+        先用(+)实现
+        
+        最后改成 left outer join
+               

@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Mcd测试页面</title>
+</head>
+<body>
+<form>
+<p>
+<object id="McdCtrl" classid="clsid:9DF944F1-0FF6-4ECC-B0D9-FB9707330B83" width="230" height="230"></object>
+</p>
+<p>
+<input type="text" id="a" size="4" value="16">
+<input type="text" id="b" size="4" value="12">
+<input type="button" value="重新计算" name="Computer" onclick="C_onclick();">
+<input type="button" value="关于" name="About" onclick="A_onclick();">
+</p>
+<input type="radio" id="c"name="Direction" >向上
+<input type="radio" id="d"name="Direction" >向下
+<input type="button" value="设置方向" name="Direct" onclick="D_onclick();">
+<script>
+  function C_onclick()
+  {
+     document.all.McdCtrl.SetNumbers(document.all.a.value,document.all.b.value);
+  } 
+  function A_onclick()
+  {
+     document.all.McdCtrl.AboutBox();
+  }
+  function D_onclick()
+  {
+    document.all.McdCtrl.Direction=(document.all.c.checked?1:0);
+  }
+</script>
+</form>
+</body>
+</html>

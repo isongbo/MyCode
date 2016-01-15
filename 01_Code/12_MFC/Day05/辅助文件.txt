@@ -1,0 +1,46 @@
+yellowdog.IsKindOf( RUNTIME_CLASS(CObject) )
+    //函数内部this为&yellowdog,参数为链表尾节点
+{
+  CRuntimeClass* pClassThis = GetRuntimeClass();
+              //获取链表头节点（&CDog::classCDog）
+
+  pClassThis->IsDerivedFrom( RUNTIME_CLASS(CObject) )
+          //函数内部this为链表头 参数为链表尾
+  {
+     CRuntimeClass* pClassThis = this;//获取链表头
+     while (pClassThis != NULL)
+     {
+	if (pClassThis == RUNTIME_CLASS(CObject) )
+		return TRUE;
+	pClassThis = pClassThis->m_pBaseClass;
+
+     }
+     return FALSE;
+  }
+}
+**********************************************************
+CObject *pObj = RUNTIME_CLASS(CDog)->CreateObject( )
+            //函数内部this为&CDog::classCDog（链表头节点）
+{
+  pObject = (*this->m_pfnCreateObject)()//调用CDog::CreateObject
+  {
+    return new CDog;
+  }
+  return pObject;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

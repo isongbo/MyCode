@@ -1,0 +1,64 @@
+
+mov         ecx,dword ptr [g_nValue (00427c48)]
+add         ecx,1
+mov         dword ptr [g_nValue (00427c48)],ecx
+
+ecx = g_nValue;
+ecx = ecx + 1;
+g_nValue = ecx;
+
+
+
+WaitForSingleObject( g_hEvent,...)
+{
+    负责阻塞的代码
+    ..........
+    if( g_hEvent是事件句柄 )
+    {
+        判断事件的复位方式
+        if(自动复位)
+           ResetEvent(g_hEvent);
+        else if(手动复位)
+        {
+            //什么都不做
+        }           
+    }
+}
+
+ResetEvent(..);
+
+
+
+
+
+虚函数（多态）
+
+this
+
+union
+
+->*      .*
+
+类的静态成员（函数/变量）
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

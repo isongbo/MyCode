@@ -1,0 +1,29 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+	    char userpasswd[30]="openlab/open123";
+	    char var_name[30];
+		/* 远程数据描述 */
+		char rdbdesc[20]="db730";
+		/* 区分数据库连接的标签 */
+        char db330[20]="db330";
+		char db730[20]="db730";
+	exec sql end   declare section;
+	/* 直接和rdbdesc对应的数据库建立连接 */
+	exec sql connect:userpasswd at:db730 
+		using :rdbdesc;
+	/* 本地数据库连接 */
+	exec sql connect:userpasswd at:db330;
+	exec sql at:db730 select first_name 
+	  into :var_name from s_emp where id=1;
+	printf("db730 var_name=%s\n",var_name);
+    exec sql at:db330 select first_name
+	  into :var_name from s_emp where id=1;
+    printf("db330 var_name%s\n",var_name);
+    exec sql at:db730 commit work release;
+	exec sql at:db330 commit work release;
+}
+
+
+

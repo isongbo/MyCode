@@ -1,0 +1,184 @@
+1 创建项目目录，包括源码、文档、数据库、资源、可执行文件等
+2 在源码目录下创建工程空间VODSYS，目录为src，去掉自动生成的VODSYS
+3 创建MFC单文档应用程序，文档视架构的支持，View继承自CFormView，设置输出为../../bin/server(两处设置)
+  3.1 在工程中，添加类vc界面的工具条。
+      3.1.1 sizecbar.h sizecbar.cpp scbarg.h、scbarg.cpp 四个文件复制到工程thirdpart目录下。
+      3.1.2 在菜单Project->Add to project->Files将四个文件加入工程中,此时在ClassView中将出现了一个称为CCoolBar的类。
+      3.1.3 在stdafx.h文件中加上
+         //浮动时候替换原来TOOL WINDOWS的框架
+         #define _SCB_REPLACE_MINIFRAME
+         #include "thirdpart\sizecbar.h"
+         #include "thirdpart\scbarg.h"
+      3.1.4 为CMainFrame增加成员变量：
+            CCoolBar m_LeftCtrBar; //左面的控制窗口
+            CCoolBar m_BottomCtrBar; //最下面的控制窗口
+      3.1.5 创建和停靠工具栏
+   
+      3.1.6 该ControlBar在浮动的时候顶部的把手会消失，变成了普通的ToolWindow类型的标题栏。为了避免这种情况，
+           我们需要在CMainFrame::OnCreate()中，在EnableDocking()后加入：
+           #ifdef _SCB_REPLACE_MINIFRAME
+           m_pFloatingFrameClass = RUNTIME_CLASS(CSCBMiniDockFrameWnd); 
+           #endif //_SCB_REPLACE_MINIFRAME
+           并在stdafx.h中加上#define _SCB_REPLACE_MINIFRAME，在两个头文件前面
+
+      
+4 设置工具栏上按钮的功能和状态，分别添加两种消息
+
+5 设置皮肤
+     1 拷贝skin目录到当前的工程中
+    (皮肤文件、h文件、dll文件、lib文件)
+  2 在项目的头文件stdafx.h中包含头文件，引入lib文件
+
+
+6 在左边的控制窗口中添加树控件
+  1 在CMainFrame中添加成员变量m_wndTree
+  2 在CMainFrame的OnCreate()中动态创建树控件
+7 在底部的控制窗口中添加对话框
+  1 添加对话框资源，设置风格style：child;border:none
+  2 双击资源窗口生成对话框类CDlgVideo
+  3 在CMainFrame的OnCreate()中创建和显示对话框
+8 在CFormView视图中添加MS DataGrid控件(COM组件)
+   Microsoft DataGrid Control 6.0
+   CDataGrid、CColumns CColunm添加到工程
+  1 为控件绑定成员变量m_wndGrid
+  2 控件铺满窗口的客户区，给视图添加WM_SIZE的消息处理
+设计视频编辑对话框。
+
+---------------------------------------
+VODServer对数据库的访问和操作
+1 视频数据的显示，使用DataGrid组件显示
+操作步骤：
+  1 拷贝ado的封装类到当前项目中，并且添加到项目中。
+  2 在stdafx.h中，包含封装类的头文件
+
+  3 在CMainFrame类中，添加成员变量
+
+    CAdoConnection m_adoConnection;
+    并且在构造函数中，连接数据库
+    	m_adoConnection.ConnectAccess   ("../../DB/VODDB.mdb");
+  4 在视图类View中，添加成员变量
+    CAdoRecordSet  m_adoRecordSet; 
+  5 在视图类的OnInitialUpdate函数中，添加用于
+   绑定记录集与datagrid代码
+  6 在视图类中添加BindDataGrid函数并实现
+  7 注意COM的初始化，在App的InitInstance中完成
+  8 注意数据库文件的位置，把DB目录拷贝到指定位置 
+  9 当一个工程中的类非常多，我可以通过添加文件夹
+    的方式对类进行分类，以便于查看和管理所有的类，
+    但是它不会影响到真正的文件目录。
+2  在不同的控件中显示视频类型信息(树控件、组合框控件)
+   2.1 添加并实现CTypeManger类 
+       2.1.1添加CType结构的定义
+       2.1.2 实现GetAllType()函数 
+   2.2 在界面的控件中调用该类完成类型信息的显示
+       2.2.1 树控件的操作
+       1>在CMainFrame类中添加函数InitTypeTreeCtrl()
+       2>在CMainFrame类的OnCreate函数中调用
+       2.2.2 组合框控件中添加类型
+       1>在CDlgVideo中添加控件的初始化函数
+         InitVideoTypeCtrl()
+       2>在CMainFrame类的OnCreate函数中，创建和显示
+         对话框之后调用。
+
+3 实现在对话框中对视频数据的增 删 改操作，重新显示操作
+  后的数据
+  3.1 添加操作视频信息表的类CVideoManager和CVideo结构      体
+  3.2 添加和实现用于增、删、改的函数
+
+  3.3 使用CVideoManager实现对视频表的操作
+      3.3.0 当DataGrid控件选择项发生改变时，将数据显示            到对话框上 
+            首先添加DataGrid控件的SelChange消息处理函            数，实现值的传递。
+      3.3.1 在DataGrid控件中，选择一条记录，将该记录
+            显示到对话框。插入按钮的文本变为"更新"
+            在对话框中修改数据，点击更新，将新数据更新
+            到数据库后，DataGrid显示新数据
+      3.3.2 点击"新建"按钮，对话框数据清空，更新按钮
+            的文本变为"插入",输入新的数据，点击“插入            ”按钮，数据插入到数据库。DataGrid从数据库
+            中获取新数据显示。
+      3.3.3 在DataGrid控件中，选择一条记录，将该记录
+            显示到对话框。点击删除按钮，在数据库中删除
+            数据，DataGrid从数据库
+            中获取新数据显示。
+      3.3.4 插入和更新的操作放到同一个按钮中实现了。
+      实现步骤：
+      "新建"、"插入"、"删除"按钮添加消息处理函数
+      1>"新建"的实现
+         清空所有控件数据，修改按钮的文本
+      2>"插入"、"更新"的实现
+         根据视频的ID是否为空，判断是插入还是更新操作
+         操作完成后调用BindDataGrid重新显示数据
+      3>"删除"的实现
+         获取要删除视频数据的ID，执行删除操作
+         操作完成后调用BindDataGrid重新显示数据
+         清空控件中的数据
+---------------------------------------------
+   媒体类型的增、删、改操作，树控件与数据库数据的操作。
+   用户信息的增、删、改和查询操作。 
+          
+一 项目中的socket通信
+   1 基于连接的TCP通信，TCP服务器/客户端
+   2 基本的步骤：
+     2.1 定义用于传输的数据包结构(传输协议)
+     2.2 定义和实现网络通信的封装类
+     2.3 界面对封装类的调用
+   3 VODServer关于网络通信的实现步骤：
+     3.0 socket库的初始化
+         1 在App的InitInstance函数中：
+         	if(!AfxSocketInit())
+		AfxMessageBox("Failed ",
+                MB_OK| MB_ICONSTOP);
+         2 在stdafx.h文件中添加头文件
+         #include "afxsock.h"//socket头文件   
+     3.1 添加两个相关类，CNetServer和CNetClient。并且
+         在CNetClient类定义的前面添加数据包结构的定义
+     3.2 完成CNetServer类的编写
+          
+     3.3 完成CNetClient类的编写
+         3.3.1 完成InitClient函数的编写
+         3.3.2 完成OnLogin函数的编写 
+         3.3.3 返回所有的视频类型信息
+	       BOOL OnAllVideoTypes();
+	 3.3.4 返回指定类型ID的所有视频信息
+	       BOOL OnVideosByTypeID();
+	 3.3.5处理客户端请求的视频文件
+               BOOL OnMediaData();
+         3.3.6 原始的数据收发函数
+	BOOL RecvData(LPVOID  pData,UINT nLen);
+        BOOL SendData(DWORD dwCmdID,LPVOID                       pData,UINT nLen );
+        BOOL SendRaw(LPVOID  pData,UINT nLen);
+     3.4 界面对CNetServer类的调用 
+       3.4.1 在CMainFrame中包含头文件
+             #include "NetServer.h"
+       3.4.2 在CMainFrame 类中添加成员变量
+             CNetServer m_NetServer;
+       3.4.3 在CMainFrame的OnCreate函数中启动服务器
+             m_NetServer.InitServer(); 
+4 VODClient 的实现:
+  4.1 皮肤的添加、工具条的添加 以及登录对话框的添加
+
+  4.2 添加Media Player ActiveX控件，并在view中处理控件的大小。
+  4.3 VODClient网络数据传输的实现ClientSocket
+      4.3.1 在工程中，添加CClientSocket类，拷贝服务器的数据包结构到CClientSocket类的头文件中。
+      4.3.2 定义并实现CClientSocket类中的相关函数
+      4.3.3 在界面中使用CClientSocket类 
+  	
+   
+     3.4 界面对CNetServer类的调用 
+       3.4.1 在CMainFrame中包含头文件
+             #include "NetServer.h"
+       3.4.2 在CMainFrame 类中添加成员变量
+             CNetServer m_NetServer;
+       3.4.3 在CMainFrame的OnCreate函数中启动服务器
+             m_NetServer.InitServer();  
+   
+   4 VODClient的实现：
+   4.1 皮肤的添加、工具条的添加以及登录对话框的添加。
+   4.2 添加Media Player ActiveX控件，并在View中处理
+       控件的大小
+   4.3 VODClient网络数据传输的实现
+       4.3.1 在工程中，添加CClientSocket类，拷贝服务器             的数据包结构到CClientSocket类的头文件中
+       4.3.2 定义并实现CClientSocket类中的相关函数
+       4.3.3 在界面中使用CClientSocket类 
+-------------------------------------
+
+ 

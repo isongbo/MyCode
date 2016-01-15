@@ -1,0 +1,54 @@
+AddDocTemplate(pTemplate);
+{
+  m_pDocManager->AddDocTemplate(pTemplate);
+  {
+     //将文档模板对象的地址保存到链表中
+     m_templateList.AddTail(pTemplate);
+  }
+}
+OnFileNew();
+{
+  m_pDocManager->OnFileNew();
+  {
+     //获取链表的表头节点
+     CDocTemplate* pTemplate = (CDocTemplate*)m_templateList.GetHead();
+     // 新建文档
+     pTemplate->OpenDocumentFile(NULL);
+     {
+         // 1 创建文档对象
+         pDocument = CreateNewDocument();
+         {
+           //动态创建文档对象
+           CDocument* pDocument = (CDocument*)m_pDocClass->CreateObject();
+           //在文档模板成员变量中保存文档对象地址
+           AddDocument(pDocument);
+           {
+              m_pOnlyDoc = pDoc;
+           } 
+         }
+         // 2 创建框架对象
+         pFrame = CreateNewFrame(pDocument, NULL);
+         {
+            CCreateContext context;
+            context.m_pCurrentDoc = pDoc;
+            context.m_pNewViewClass = m_pViewClass;
+            context.m_pNewDocTemplate = this;
+            //动态创建框架对象
+            CFrameWnd* pFrame = (CFrameWnd*)m_pFrameClass->CreateObject();
+            // 创建框架窗口
+            pFrame->LoadFrame(m_nIDResource,..,&context);
+            // 产生WM_CREATE消息，调用CFrameWnd::OnCreate函数，
+            在函数中，动态创建视图对象和窗口。
+            //产生视图窗口的WM_CREATE消息，调用CView::OnCreate
+            函数，在函数中，视图与文档相互保存对方地址。
+               
+         }
+         //将框架对象地址保存到应用程序中
+         pThread->m_pMainWnd = pFrame;
+         //初始化更新框架
+         InitialUpdateFrame(pFrame, pDocument, bMakeVisible);
+         
+         
+     }
+  }
+}

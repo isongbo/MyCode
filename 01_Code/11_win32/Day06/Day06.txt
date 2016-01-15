@@ -1,0 +1,57 @@
+//删除菜单项
+BOOL DeleteMenu(
+  HMENU hMenu,     // 菜单句柄
+  UINT uPosition,  // 菜单项ID或菜单项位置
+  UINT uFlags      // MF_BYCOMMAND/MF_BYPOSITON
+);
+
+//将 客户区坐标系下的坐标 转换 屏幕坐标系下的坐标
+BOOL ClientToScreen(
+  HWND hWnd,       // 窗口句柄
+  LPPOINT lpPoint  // [IN/OUT]
+             输入：客户区坐标系下的一个坐标
+             输出：转换之后屏幕坐标系下的坐标
+);
+
+               CL.EXE
+.c/.cpp---------------->.obj|
+                                             |   LINK.EXE
+            RC.EXE                     |-------------->.exe....
+.rc--------------------->.res |
+
+
+MAKEINTRESOURCE - 将数字形式的资源ID转换字符串形式
+                                        的资源ID
+
+字符串形式的资源ID = MAKEINTRESOURCE（数字形式资源ID）
+
+//绘制.ico的图片（图标）
+BOOL DrawIcon(
+  HDC hDC,      // BeginPaint返回值
+  int X,        // 水平坐标
+  int Y,        // 垂直坐标
+  HICON hIcon   // 图标句柄
+);
+
+
+//获取光标位置
+BOOL GetCursorPos(
+  LPPOINT lpPoint   // 返回光标位置（屏幕坐标系下）
+);
+//将 屏幕坐标系下的坐标 转换为 客户区坐标系下的坐标
+ScreenToClient
+
+//获取窗口边界信息(客户区坐标系下)
+GetClientRect 
+
+
+
+
+
+
+
+
+
+
+
+

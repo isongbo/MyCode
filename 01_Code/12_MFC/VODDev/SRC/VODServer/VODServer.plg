@@ -1,0 +1,96 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: VODServer - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"../../bin/server/VODServer.res" /d "_DEBUG" /d "_AFXDLL" "F:\VODDev\SRC\VODServer\VODServer.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DB.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"../../bin/server/VODServer.pch" /Yu"stdafx.h" /Fo"../../bin/server/" /Fd"../../bin/server/" /FD /GZ /c 
+"F:\VODDev\SRC\VODServer\ADO\Ado.cpp"
+"F:\VODDev\SRC\VODServer\ADO\AdoCommand.cpp"
+"F:\VODDev\SRC\VODServer\ADO\AdoRecordSet.cpp"
+"F:\VODDev\SRC\VODServer\column.cpp"
+"F:\VODDev\SRC\VODServer\columns.cpp"
+"F:\VODDev\SRC\VODServer\datagrid.cpp"
+"F:\VODDev\SRC\VODServer\DlgVideo.cpp"
+"F:\VODDev\SRC\VODServer\MainFrm.cpp"
+"F:\VODDev\SRC\VODServer\NetClient.cpp"
+"F:\VODDev\SRC\VODServer\NetServer.cpp"
+"F:\VODDev\SRC\VODServer\thirdpart\scbarg.cpp"
+"F:\VODDev\SRC\VODServer\thirdpart\sizecbar.cpp"
+"F:\VODDev\SRC\VODServer\TypeManager.cpp"
+"F:\VODDev\SRC\VODServer\UserManager.cpp"
+"F:\VODDev\SRC\VODServer\VideoManager.cpp"
+"F:\VODDev\SRC\VODServer\VODServer.cpp"
+"F:\VODDev\SRC\VODServer\VODServerDoc.cpp"
+"F:\VODDev\SRC\VODServer\VODServerView.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DB.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DC.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"../../bin/server/VODServer.pch" /Yc"stdafx.h" /Fo"../../bin/server/" /Fd"../../bin/server/" /FD /GZ /c 
+"F:\VODDev\SRC\VODServer\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DC.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DD.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"../../bin/server/VODServer.pdb" /debug /machine:I386 /out:"../../bin/server/VODServer.exe" /pdbtype:sept 
+\VODDev\bin\server\Ado.obj
+\VODDev\bin\server\AdoCommand.obj
+\VODDev\bin\server\AdoRecordSet.obj
+\VODDev\bin\server\column.obj
+\VODDev\bin\server\columns.obj
+\VODDev\bin\server\datagrid.obj
+\VODDev\bin\server\DlgVideo.obj
+\VODDev\bin\server\MainFrm.obj
+\VODDev\bin\server\NetClient.obj
+\VODDev\bin\server\NetServer.obj
+\VODDev\bin\server\scbarg.obj
+\VODDev\bin\server\sizecbar.obj
+\VODDev\bin\server\StdAfx.obj
+\VODDev\bin\server\TypeManager.obj
+\VODDev\bin\server\UserManager.obj
+\VODDev\bin\server\VideoManager.obj
+\VODDev\bin\server\VODServer.obj
+\VODDev\bin\server\VODServerDoc.obj
+\VODDev\bin\server\VODServerView.obj
+\VODDev\bin\server\VODServer.res
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP4DD.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+Ado.cpp
+AdoCommand.cpp
+AdoRecordSet.cpp
+column.cpp
+columns.cpp
+datagrid.cpp
+DlgVideo.cpp
+MainFrm.cpp
+NetClient.cpp
+NetServer.cpp
+scbarg.cpp
+sizecbar.cpp
+TypeManager.cpp
+UserManager.cpp
+VideoManager.cpp
+VODServer.cpp
+VODServerDoc.cpp
+VODServerView.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+VODServer.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

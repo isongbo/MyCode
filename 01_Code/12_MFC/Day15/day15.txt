@@ -1,0 +1,120 @@
+MFC第三部分Windows平台访问数据技术
+1 相关概念
+  ODBC-Open Database Connectivity，微软开放式数据互联。
+  是一组用于访问数据库的API，可以使用这一组API访问和操作
+  不同的数据库产品。访问前，必须将不同的数据库设置为ODBC
+  数据源。MFC将这组API封装为ODBC类。只能访问关系型数据库。
+  DAO-基于ODBC的，目前已经淘汰。
+  OLE DB-基于COM组件技术的，提供了访问数据库的接口。功能
+  和性能都有很大提高。由于使用难度大，并没有流行起来。
+  ADO-基于OLE DB，又做了封装，提供了相对简单的访问数据库
+  的接口。由于降低了使用的难度，所以逐渐流行起来，成为
+  Windows平台上访问数据库使用的最广泛的技术。
+  ADO.NET-基于NET平台的，访问数据库的一组类。
+2 ODBC类的使用
+  2.1 相关类
+      CDatabase类-主要功能是连接和关闭数据库，另外还提供了
+      执行Sql语句的功能。
+      CRecordset类-主要功能是访问和操作数据。
+      #include <afxdb.h>
+  2.2 设置ODBC数据源(以Access数据库为例)
+      开始->设置->控制面板->管理工具->ODBC数据源
+  2.3 使用ODBC类访问数据源
+  2.3.1 打开ODBC数据源
+      CDatabase::Open
+  2.3.2 执行Sql语句
+      CDatabase::ExecuteSQL
+  2.3.3 打开表获取数据
+      CRecordset::Open
+  2.3.4 获取字段数量/信息/值
+      CRecordset::GetODBCFieldCount
+      CRecordset::GetODBCFIeldInfo
+      CRecordset::GetFieldValue
+  2.3.5 记录集的指针操作
+      CRecordset::MoveNext
+      CRecordset::IsEOF
+      ...
+  2.3.6 关闭记录集
+      CRecordset::Close
+  2.3.7 关闭数据库
+      CDatabase::Close
+ 
+3 ADO的使用
+  ADO是一个独立于MFC的组件。组件的文件：msado15.dll。
+  路径： "C:\Program Files\Common Files\System\ado"
+3.1 导入组件
+  #import "组件的文件路径" no_namespace rename("EOF","adoEOF")  
+  编译整个项目，生成msado15.tlh和msado15.tli。
+3.2 在实际的开发中，为了避免每次开发新的项目时，都做必要
+   的COM与C++之间的类型转换。使用C++类封装组件的接口，使用
+   类的成员函数代替接口函数。
+3.3 ADO组件的接口介绍
+   Connection接口-功能类似于ODBC的CDatabase类。使用
+   CAdoDatabase类封装该接口。
+   Recordset接口-功能类似于ODBC的CRecordset类。使用
+   CAdoRecordset类封装该接口。
+3.4 在使用接口前，需要初始化COM库，使用后卸载COM库。
+   CoInitialize(NULL);    CoUninitialize();
+3.5 Connection接口的使用
+   3.5.1 连接数据库
+    HRESULT Open (
+     _bstr_t ConnectionString,//连接字符串
+     _bstr_t UserID,//数据库登录名称  ""
+     _bstr_t Password,//数据的登录密码  ""
+     long Options//不指定，写-1
+    ); 
+    使用udl文件配置生成连接字符串。
+   3.5.2 关闭数据库
+    Close()
+3.6 Recordset接口的使用
+   3.6.1 打开表
+  HRESULT Open (
+   const _variant_t & Source,//Sql语句，表名，存储过程名称
+   const _variant_t & ActiveConnection,//活动连接
+   enum CursorTypeEnum CursorType,//游标类型
+   enum LockTypeEnum LockType,//记录集的锁定类型
+   long Options//标识第一个参数的。adCmdText/adCmdTable/
+                                  adCmdStoredProc
+   );   
+   游标类型
+   enum CursorTypeEnum
+   {
+    adOpenForwardOnly = 0,//单向的静态游标
+    adOpenKeyset = 1,//键集游标(动态游标的一种)
+    adOpenDynamic = 2,//动态游标
+    adOpenStatic = 3//双向的静态游标
+   };
+   记录集的锁定类型
+   enum LockTypeEnum
+   {
+    adLockReadOnly = 1,//只读记录集
+    adLockPessimistic = 2,//悲观锁
+    adLockOptimistic = 3,//乐观锁
+    adLockBatchOptimistic = 4//批处理的乐观锁
+   };
+
+   
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

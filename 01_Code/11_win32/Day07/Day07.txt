@@ -1,0 +1,133 @@
+SetCapture
+
+ReleaseCapture
+
+
+
+
+
+
+TranslateAccelerator( hWnd, hAccel,&nMsg )
+{
+    if( nMsg.message != WM_KEYDOWN..)
+       return 0;
+    根据nMsg.wParam(虚拟键码值)可以获知哪些按键被按下
+    （CTRL+M）
+    拿着CTRL+M到hAccel(加速键表)中去匹配查找
+    if( 没找到 )
+        return 0；
+    if( 找到 )
+    {
+        PostMessage( hWnd, WM_COMMAND,
+                                      ID_NEW|||1, NULL );
+        return 123;
+    }
+}
+
+
+HDC hdc = BeginPaint( hWnd,...);
+
+TextOut( hdc, 100, 100, "hello", 5 );
+Ellipse( hdc, 100, 100, 150, 150 );
+
+EndPaint
+
+
+
+//将 窗口当前点 移动到 它指定的点，并将它指定的点作为窗口
+   当前点。
+BOOL MoveToEx(
+  HDC hdc,          // DC句柄
+  int X,            // 指定点的X坐标  
+  int Y,            // 指定点的Y坐标  
+  LPPOINT lpPoint   // 返回原来点的坐标，可以为NULL
+);
+//从 窗口当前点 到 它指定的点 绘制一条直线，
+   并将它指定的点作为窗口当前点
+BOOL LineTo(
+  HDC hdc,    // DC句柄
+  int nXEnd,  // 指定点的X坐标
+  int nYEnd   // 指定点的Y坐标
+);
+//绘制直角矩形
+BOOL Rectangle(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   //左上角X坐标
+  int nTopRect,    //左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect  // 右下角Y坐标
+);
+//绘制圆角矩形
+BOOL RoundRect(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   // 左上角X坐标
+  int nTopRect,    // 左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect, // 右下角Y坐标
+  int nWidth,      // 弧的宽度
+  int nHeight      // 弧的高度
+);
+
+//绘制圆形
+BOOL Ellipse(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   //左上角X坐标
+  int nTopRect,    //左上角Y坐标
+  int nRightRect,  // 右下角X坐标
+  int nBottomRect  // 右下角Y坐标
+);
+//绘制弧线
+BOOL Arc(
+  HDC hdc,         // DC句柄
+  int nLeftRect,   // 左上角X坐标
+  int nTopRect,    // 左上角Y坐标
+  int nRightRect,  // 右下角X坐标 
+  int nBottomRect, // 右下角Y坐标
+  int nXStartArc,  // 起点X坐标
+  int nYStartArc,  //  起点Y坐标 
+  int nXEndArc,    // 终点X坐标
+  int nYEndArc     // 终点Y坐标
+);
+
+
+
+
+//创建实心画刷
+HBRUSH CreateSolidBrush(
+  COLORREF crColor   // 颜色值
+);
+//创建位图画刷
+HBRUSH CreatePatternBrush(
+  HBITMAP hbmp   // 位图句柄
+);
+
+
+
+COLORREF nColor = 123;
+func(int x, int y, COLORREF nColor )
+{
+    return x+y+nColor;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,38 @@
+列表框
+1. 从风格上分类
+      单列列表框 - 默认
+      多列列表框 - LBS_MULTICOLUMN
+2. 列表框的使用
+   2.1 创建 “LISTBOX”
+   2.2 添加选项  LB_ADDSTRING - 追加
+                          LB_INSERTSTRING - 按指定位置添加
+   2.3 删除选项  LB_DELETESTRING - 删除指定项
+                         LB_RESETCONTENT - 清空所有项
+   2.4 获取和设置选择项
+            LB_GETCURSEL / LB_SETCURSEL
+   2.5 匹配查找选项
+         LB_FINDSTRING
+         LB_FINDSTRINGEXACT
+         LB_SELECTSTRING
+   2.6 获取选项的文本
+         LB_GETTEXTLENGTH
+         LB_GETTEXT
+   2.7 附加数据
+         LB_SETITEMDATA
+         LB_GETITEMDATA
+3 通知消息
+     LBN_SELCHANGE - 当前选择项发生变化后，依附于
+              WM_COMMAND消息发送到父窗口中。
+
+
+../lib/Clib.lib
+
+../lib/CPPlib.lib
+
+../bin/Cdll.dll
+
+
+
+
+
+

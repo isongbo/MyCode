@@ -1,0 +1,9 @@
+; ConnectionCom.def : 定义模块参数。
+
+LIBRARY      "ConnectionCom.DLL"
+
+EXPORTS
+	DllCanUnloadNow		PRIVATE
+	DllGetClassObject	PRIVATE
+	DllRegisterServer	PRIVATE
+	DllUnregisterServer	PRIVATE

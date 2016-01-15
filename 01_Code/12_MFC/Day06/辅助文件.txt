@@ -1,0 +1,105 @@
+CMyFrameWnd *pFrame = new CMyFrameWnd;
+CCreateContext cct;
+cct.m_pCurrentDoc = new CMyDoc;
+cct.m_pNewViewClass = RUNTIME_CLASS(CMyView);
+pFrame->LoadFrame( ..., &cct )//函数内部this为pFrame
+{
+  Create(..,&cct)//函数内部this为pFrame
+  {
+    CreateEx(..,&cct)//函数内部this为pFrame
+    {
+      CREATESTRUCT cs;
+      ....
+      cs.lpCreateParams = &cct;
+      ::CreateWindowEx(...,&cct );
+      //此函数一旦执行成功WM_CREATE出现，lParam附带信息可以重新
+      //得到这个函数所有12个参数
+    }
+  }
+}
+**********************************************************
+//处理框架窗口的WM_CREATE消息（创建视图窗口）
+CFrameWnd::OnCreate(lpcs)//函数内部this为pFrame
+{
+  CCreateContext* pContext = lpcs->lpCreateParams;
+             //获取&cct
+  OnCreateHelper(lpcs, &cct)//函数内部this为pFrame
+  {
+    OnCreateClient(lpcs, &cct)//函数内部this为pFrame
+    {
+      CreateView(&cct..)//函数内部this为pFrame
+      {
+	 CWnd* pView = &cct->m_pNewViewClass->CreateObject();
+                  //动态创建视图类对象，并返回对象地址
+         pView->Create(..,&cct)//函数内部this为pView
+         {
+           CreateEx(..,&cct)//函数内部this为pView
+           {
+             ::CreateWindowEx(..,&cct);
+             //此函数一旦执行成功WM_CREATE出现，lParam附带信息
+             // 可以重新得到这个函数所有12个参数
+           }
+         }
+      }
+    }
+  }
+}
+*******************************************************
+//处理视图窗口的WM_CREATE消息（绑定）
+CEditView::OnCreate(lpcs)//函数内部this为pView
+{
+  CCtrlView::OnCreate(lpcs)//函数内部this为pView
+  {
+    CCreateContext* pContext = lpcs->lpCreateParams;
+                //获取&cct===pContext
+    &cct->m_pCurrentDoc->AddView(pView)
+        //函数内部this为文档类对象地址 参数为视图类对象地址
+    {
+      m_viewList.AddTail(pView);
+         //文档类对象用一个链表成员保存和它绑定的视图类对象
+      pView->m_pDocument = this;
+         //视图类对象用一个普通成员变量保存和它绑定的文档类对象
+    }
+  }
+}
+***********************************************************
+*************************************************************
+WM_COMMAND消息的路线
+
+OnCommand(..)//函数内部this为pFrame
+{
+  CWnd::OnCommand(..)//函数内部this为pFrame
+  {
+    CFrameWnd::OnCmdMsg(..)//函数内部this为pFrame
+    {
+      pView->OnCmdMsg(..)//函数内部this为pView
+      {
+        CCmdTarget::OnCmdMsg(..)//终点********this为pView
+      }
+      m_pDocument->OnCmdMsg(..)//函数内部this为文档类对象地址
+      {
+        CCmdTarget::OnCmdMsg(..)//终点********this为文档类对象
+      }
+      CWnd::OnCmdMsg(..)//函数内部this为pFrame
+      {
+        CCmdTarget::OnCmdMsg(..)//终点********this为pFrame
+      }
+      pApp->OnCmdMsg(..)//函数内部this为&theApp
+      {
+        CCmdTarget::OnCmdMsg(..)//终点********this为&theApp
+      }
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+

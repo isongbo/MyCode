@@ -1,0 +1,130 @@
+﻿一.什么是qt
+     一个基于c++语言的框架 
+     一个专注于图形用户界面的框架 
+     一个跨平台的框架 
+     一个艺术级别(功能强大)的图形框架  
+
+二.qt发展的历史
+     05年  qt4.0发布
+     08年   诺基亚收购
+     09年   开源 
+     qt-project.org 
+
+三.qt的编程环境 
+     3.1 qt的编程工具
+     assistant   帮助手册
+     qmake      -v       查看qt的版本 
+     qmake      -project    会把项目中的源文件 组织成
+                       项目描述文件 .pro 
+     qmake      可以根据 .pro 文件 获得  Makefile
+                       （文件依赖）
+     make        根据Makefile  获得目标 
+     designer   可视化的界面设计工具 
+                       得到的界面文件 是 ***.ui 
+     uic             可以把ui文件 转换成 .h文件 
+     qtcreator    集成开发工具 
+     3.2  qt的头文件 
+     /usr/include/qt4 
+     qt按照功能 划分了模块 
+         QtCore    QtGui
+         QtNetWork    QtOpenGL       QtXml   QtSql
+     qt中一个类 对应一个头文件  
+     使用没有.h的头文件 这样头文件的名字 和 类名可以保持一致
+     3.3 qt的库文件 
+     /usr/lib/i386-linux-gnu
+     库文件就是对 头文件的分模块实现 
+     ls  libQt*
+     
+ 四.第一个qt程序
+     任何一个qt程序 都要有一个独立的目录 
+     使用c++ 语言来编写           
+     
+     g++  ***.cpp   -I/usr/include/qt4/QtGui   
+             -I/usr/include/qt4  -lQtGui
+  五.使用开发工具 编译 链接程序 
+       1.根据源文件  获得项目描述文件 .pro 
+         qmake  -project
+         如果是qt5 就打开 .pro 文件 加入
+         QT += widget
+       2.根据.pro 文件 获得Makefile
+         qmake 
+       3.根据Makefile 获得目标 
+         make   
+       4.执行程序 
+         ./执行文件名 
+  六.qt 的帮助文档 可以提供内容
+      6.1 类所属的模块
+      #include <QApplication>
+      #include <QtGui/QApplication>   
+      6.2 类的继承关系
+      一个类继承自哪个类 以及被哪些类继承
+      6.3 类的属性
+      类的 特征 (成员变量)
+      继承来的属性 
+      6.4 类的公开函数
+            构造函数 
+            成员函数   以及继承来的成员函数 
+      6.5 信号 和 槽  （函数）
+      本类中的 以及继承来的 特殊函数  
+      class  A{
+             public slots:
+             void    mySlots();
+             public :signals:
+             void    mySig();  
+      }; 
+      信号函数 只需要声明 不需要实现 系统会自动实现
+       
+       6.6  静态函数
+       不需要对象 就可以直接通过类型进行调用 
+
+       6.7  保护函数
+       一般是 事件处理函数  
+       6.8 类的详细说明  
+            
+ 七.中文的显示 
+     QTextCodec    文本编码类 
+     1.构建文本编码对象 传入编码方式
+        utf-8     GBK    gb2312
+        QTextCodec *   codecForName(const char* name);
+     2.使用文本编码对象 把带有中文的字符串变成unicode    
+         QString    toUnicode(const char* str);  
+  八.关闭标签 
+      QObject  中有一个静态成员函数 可以完成两个毫不相关
+              对象的关联。
+      QObject::connect(
+            const QObject* sender,
+            const char* signal,
+            const QObject* reciver,
+            const char*  method);  
+      sender 是信号的发送者的地址
+      signal 是所发出的信号   SIGNAL(信号函数名())
+      reciver  信号的接收者的地址 
+      method  处理信号的函数 一般是槽函数  SLOT(槽函数名()) 
+  
+      QPushButton  找一个信号函数代表点击行为
+           void  clicked()   
+      QLabel   找一个槽函数 代表关闭行为 
+           bool  close()  
+九. 父窗口
+     9.1 概念
+     一个组件 如果没有指定父窗口  则这个组件就是一个独立
+            组件。一旦给一个组件 指定父窗口 则这个组件停靠
+            在父窗口上。默认停靠在父窗口的原点坐标。
+     父窗口的类型 必须 是QWidget 类型 或者这个类型的
+            子类型 QMainWindow  QDialog。
+     9.2 调整组件的大小 和 位置
+     调整大小  resize(x,y);  x代表宽度  y代表高度 
+     调整组件的位置   move(x,y); x代表横坐标 y 代表纵坐标 
+     
+
+
+     QSlider          滑块类
+     QSpinBox     微调框类  
+
+
+
+
+
+
+   
+ 

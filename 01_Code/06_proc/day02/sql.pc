@@ -1,0 +1,44 @@
+#include <stdio.h>
+exec sql include sqlca;
+int main(){
+    exec sql begin declare section;
+	    char userpasswd[30]="openlab/open123";
+	    int  id=2;
+		char name[30]="test2";
+		double salary=19000;
+	exec sql end   declare section;
+	exec sql connect:userpasswd;
+	if(!sqlca.sqlcode){
+	    printf("connect db success!\n"); 
+	}else{
+	    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+	}
+    exec sql  create table emp123(
+	    id  number  primary key,
+		name varchar2(30),
+		salary  number);
+    if(!sqlca.sqlcode){
+	    printf("create table success!\n"); 
+	}else{
+	    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+	} 
+	exec sql insert into emp123 values(
+		1,'test1',8000);
+    if(!sqlca.sqlcode){
+	    printf("insert data success!\n"); 
+		exec sql commit;
+	}else{
+	    printf("%s\n",sqlca.sqlerrm.sqlerrmc);
+	} 
+    exec sql insert into emp123 values(
+	    :id,:name,:salary);
+    exec sql  commit;
+    exec sql  update  emp123  set 
+		salary=salary*1.6 where id=1;
+    exec sql  commit;
+	exec sql  select  salary into :salary
+		from emp123 where id=1;
+    printf("salary=%lf\n",salary);
+	exec sql  commit work release;
+}
+

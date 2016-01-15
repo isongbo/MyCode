@@ -1,0 +1,243 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resourceppc.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// 中文(中华人民共和国) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+#ifdef _WIN32
+LANGUAGE LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED
+#pragma code_page(936)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resourceppc.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)\r\n"
+    "LANGUAGE 4, 2\r\n"
+    "#pragma code_page(936)\r\n"
+    "#include ""res\\ListCtrlUseppc.rc2""  // 非 Microsoft Visual C++ 编辑的资源\r\n"
+    "#include ""afxres.rc""     // 标准组件\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\ListCtrlUse.ico"
+IDI_NORMAL1             ICON                    "res\\icon1.ico"
+IDI_NORMAL2             ICON                    "res\\icon2.ico"
+IDI_NORMAL3             ICON                    "res\\icon3.ico"
+IDI_NORMAL4             ICON                    "res\\icon4.ico"
+IDI_SMALL1              ICON                    "res\\ico00001.ico"
+IDI_SMALL2              ICON                    "res\\ico00002.ico"
+IDI_SMALL3              ICON                    "res\\ico00003.ico"
+IDI_SMALL4              ICON                    "res\\ico00004.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LISTCTRLUSE_DIALOG DIALOG  0, 0, 156, 129
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+CAPTION "列表视图控件DEMO"
+FONT 9, "宋体"
+BEGIN
+    CONTROL         "",IDC_LISTCTRL,"SysListView32",LVS_SHAREIMAGELISTS | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,1,1,148,124
+END
+
+IDD_LISTCTRLUSE_DIALOG_WIDE DIALOG  0, 0, 210, 129
+STYLE DS_SETFONT | WS_POPUP | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_APPWINDOW | 0x80000000L
+CAPTION "ListCtrlUse"
+FONT 9, "MS Shell Dlg"
+BEGIN
+    LTEXT           "TODO: 在此放置对话框控件。",IDC_STATIC_1,57,49,112,23
+END
+
+IDD_LISTCTRLATTR DIALOG  0, 0, 143, 119
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION
+CAPTION "对话框"
+FONT 9, "宋体, MS Sans Serif"
+BEGIN
+    CONTROL         "是否是单选",IDC_CHK_SINGLESELECT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,7,56,10
+    CONTROL         "是否可以编辑标签",IDC_CHK_EDITLABEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,25,80,10
+    CONTROL         "是否不显示表头",IDC_CHK_COLUMNHEADER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,8,43,72,10
+    LTEXT           "视图样式:",IDC_STATIC,8,61,36,8
+    LTEXT           "排序样式:",IDC_STATIC,8,77,36,8
+    LTEXT           "对齐样式:",IDC_STATIC,8,93,36,8
+    COMBOBOX        IDC_CMB_VIEWMODE,47,59,82,63,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CMB_SORT,47,75,82,47,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_CMB_ALIGN,47,91,82,61,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080403a8"
+        BEGIN
+            VALUE "CompanyName", "TODO: <公司名>"
+            VALUE "FileDescription", "TODO: <文件说明>"
+            VALUE "FileVersion", "1.0.0.1"
+            VALUE "InternalName", "ListCtrlUse.exe"
+            VALUE "LegalCopyright", "TODO: (C) <公司名>。保留所有权利。"
+            VALUE "OriginalFilename", "ListCtrlUse.exe"
+            VALUE "ProductName", "TODO: <产品名>"
+            VALUE "ProductVersion", "1.0.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x804, 936
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_LISTCTRLUSE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_LISTCTRLUSE_DIALOG_WIDE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 203
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+
+    IDD_LISTCTRLATTR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 136
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 112
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_LISTCTRLATTR DLGINIT
+BEGIN
+    IDC_CMB_VIEWMODE, 0x403, 5, 0
+0xbccd, 0xeab1, "\000" 
+    IDC_CMB_VIEWMODE, 0x403, 7, 0
+0xa1d0, 0xbccd, 0xeab1, "\000" 
+    IDC_CMB_VIEWMODE, 0x403, 5, 0
+0xd0c1, 0xedb1, "\000" 
+    IDC_CMB_VIEWMODE, 0x403, 5, 0
+0xa8b1, 0xedb1, "\000" 
+    IDC_CMB_SORT, 0x403, 3, 0
+0xdece, "\000" 
+    IDC_CMB_SORT, 0x403, 5, 0
+0xfdc9, 0xf2d0, "\000" 
+    IDC_CMB_SORT, 0x403, 5, 0
+0xb5bd, 0xf2d0, "\000" 
+    IDC_CMB_ALIGN, 0x403, 7, 0
+0xcfc9, 0xd4b6, 0xebc6, "\000" 
+    IDC_CMB_ALIGN, 0x403, 7, 0
+0xf3d7, 0xd4b6, 0xebc6, "\000" 
+    0
+END
+
+#endif    // 中文(中华人民共和国) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_CHS)
+LANGUAGE 4, 2
+#pragma code_page(936)
+#include "res\ListCtrlUseppc.rc2"  // 非 Microsoft Visual C++ 编辑的资源
+#include "afxres.rc"     // 标准组件
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

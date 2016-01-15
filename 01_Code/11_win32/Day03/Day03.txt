@@ -1,0 +1,54 @@
+BOOL MoveWindow(
+  HWND hWnd,      // 窗口句柄
+  int X,          // 水平坐标
+  int Y,          // 垂直坐标
+  int nWidth,     // 宽度
+  int nHeight,    // 高度
+  BOOL bRepaint   // 是否擦除原来位置的窗口图像
+);
+
+窗口类附加数据缓冲区的使用方法
+1 申请缓冲区
+   int cbClsExtra - 一般赋4的倍数   200
+2 写入（存）数据
+   DWORD SetClassLong(
+     HWND hWnd,       // 窗口句柄
+     int nIndex,      // 字节索引号（从哪个字节开始存）
+     LONG dwNewLong   // 存入的数据
+  );
+3 读取数据
+   DWORD GetClassLong(
+     HWND hWnd,  // 窗口句柄
+     int nIndex  // 字节索引号（从哪个字节开始读）
+   );//返回值获取读到的数据
+
+窗口附加数据缓冲区的用法
+1 申请缓冲区
+   int cbWndExtra - 一般赋4的倍数
+2 写入（存）数据
+   LONG SetWindowLong(
+     HWND hWnd,       // 窗口句柄
+     int nIndex,      // 字节索引号（从哪个字节开始存）
+     LONG dwNewLong   // 写入的数据
+   );
+3 读数据
+   LONG GetWindowLong(
+     HWND hWnd,  // 窗口句柄
+     int nIndex  // 字节索引号（从哪个开始读）
+    );//返回值获取读到的数据
+
+区别：
+   窗口类附加数据缓冲区：是基于同一个窗口类创建出来的所有
+           窗口共享的缓冲区。
+   窗口附加数据缓冲区：是窗口自己私有的缓冲区，即便是基于
+           同一个窗口类创建出来的窗口相互之间也不共享
+
+
+
+
+
+
+
+
+
+

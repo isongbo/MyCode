@@ -1,0 +1,83 @@
+TranslateMessage( &nMsg )
+{
+   if( nMsg.message != WM_KEYDOWN )
+      return..;
+   根据nMsg.wParam(虚拟键码值)可以获知哪个按键被按下
+   if(不是)
+      return..；
+   if(是)
+   {
+      判断大写锁定键是否处于打开状态
+      if( 打开 ）
+         PostMessage( nMsg.hwnd, WM_CHAR, 0X41....);
+      else
+         PostMessage( nMsg.hwnd, WM_CHAR, 0X61....);
+   }
+}
+
+
+//绘制圆形
+BOOL Ellipse(
+  HDC hdc,        // BeginPaint的返回值
+  int nLeftRect,  // 左上角X坐标
+  int nTopRect,   // 左上角Y坐标
+  int nRightRect, // 右下角X坐标
+  int nBottomRect // 右下角Y坐标
+);
+//获取窗口的边界信息
+BOOL GetClientRect(
+  HWND hWnd,      // 窗口句柄
+  LPRECT lpRect   // 返回边界信息
+);
+例如： RECT rc = { 0 };
+            GetClientRect( hWnd, &rc );
+
+//追加菜单项
+BOOL AppendMenu(
+	HMENU hMenu, //菜单句柄
+	UINT uFlags, //菜单项风格
+	UINT uIDNewItem, //菜单项ID或下拉菜单句柄
+	LPCTSTR lpNewItem //菜单项的名称 );
+uFlags：
+    MF_POPUP - 具有这种风格的菜单项，被点击后弹出下拉菜
+                           单，uIDNewItem参数必须填写 下拉菜单的
+                           句柄。
+    MF_SEPARATOR - 具有这种风格的菜单项，为分隔线
+    MF_STRING - 具有这种风格的菜单项，被点击后可以发出
+                            消息（WM_COMMAND）
+
+//更改菜单项  勾选/非勾选 状态
+DWORD CheckMenuItem(
+  HMENU hmenu,        // 菜单句柄
+  UINT uIDCheckItem,  // 菜单项ID或菜单项索引（位置）
+  UINT uCheck         //  指明第二个参数填什么/具体的状态
+);
+uCheck:
+  MF_BYCOMMAND - uIDCheckItem参数必须填写菜单项ID
+  MF_BYPOSITION - uIDCheckItem参数必须填写菜单项位置
+  MF_CHECKED - 勾选
+  MF_UNCHECKED - 非勾选
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

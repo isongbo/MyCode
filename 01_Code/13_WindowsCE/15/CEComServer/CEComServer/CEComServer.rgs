@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'CEComServer'
+		'CEComServer.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

@@ -1,0 +1,359 @@
+复习：
+1.多进程相关的函数
+    vfork()  - 与fork类似，所不同的是不去复制父进程的内存空间，而是直接占用父进程资源，父进程进入阻塞，于是造成了子进程先于父进程执行
+    exec系列: execl() - 用于跳转执行的功能函数
+第一个参数：路径
+第二个参数：执行的命令/方式
+第二个参数：可变长参数,NULL
+
+注意：
+    vfork() 和 exec系列函数搭配使用
+如：
+    int main(void)
+    {
+         int i = 0;
+         vfork();
+         printf("ok\n"); => 结果不可预知
+         return 0;
+    }   
+
+    system()  - 执行shell脚本
+
+2.中断
+   暂时停止当前运行的程序转而执行其他的程序或者处理意外情况的方式，分为硬件中断和软件中断
+ 
+3.信号
+3.1 基本知识
+   信号本质上就是软中断，ctrl+c
+   kill -l 查看当前系统中的信号
+   linux系统下一般 1 ~ 64, 其中1~31叫做不可靠信号，
+34~64叫做可靠信号
+   ctrl+c  SIGINT  2
+   ctrl+\  SIGQUIT 3
+           SIGKILL 9
+
+3.2 信号的处理方式
+   (1)默认处理，绝大多数信号默认终止进程
+   (2)忽略处理
+   (3)自定义处理
+
+注意：
+   a.信号9只能进行默认处理
+   b.信号的发送受到用户权限的限制
+
+3.3 signal函数
+   信号值,
+   信号处理方式 - SIG_DFL,SIG_IGN,自定义函数名
+
+注意：
+   (1)fork函数创建子进程对信号处理和父进程一样
+   (2)vfork函数创建子进程来说，父进程自定义处理，则子进程默认处理，其他一样
+
+3.4 信号发送方式
+   (1)键盘发送  ctrl+c
+   (2)程序错误  SIGSEGV
+   (3)kill -信号 进程号   所有的信号都能发
+   (4)发送信号的函数
+       raise(信号)/kill(pid,信号)/alarm()/sigqueue()
+------------------------------------------------------
+今天内容：
+    (1)信号的相关处理
+    (2)进程间的通信
+
+1.信号的相关处理
+1.1 信号集
+(1)基本概念
+   信号集 表示 信号的集合，用于存储多个信号
+   1 ~ 64  
+分析信号集类型：
+     数组 char str[64];   
+     指针       
+     枚举
+     8个字节  long long int,使用每一个二进制位来表示一
+     个信号，使用1表示此信号存在，0代表不存在
+
+    信号集的数据类型：sigset_t,用于存储多个信号,大小是128个字节，采用每一个二进制位表示一个信号,底层处理：
+typedef struct
+{
+    unsigned long int __val[(1024 / (8 * size     of (unsigned long int)))]; => 128个字节
+} __sigset_t;
+ 
+typedef __sigset_t sigset_t;
+
+(2)相关操作
+   sigemptyset() - 清空信号集(所有二进制位置为0)
+   sigfillset()  - 填满信号集(所有二进制位置为1)
+   sigaddset()   - 增加一个信号(对应二进制置为1)
+   sigdelset()   - 删除一个信号(对应二进制置为0)
+   sigismember() - 查找是否存在某个信号
+
+1.2 信号的屏蔽
+   当某些关键代码的执行不允许被打断时，需要采用信号的屏蔽去解决此问题
+
+(1)sigprocmask函数
+   #include <signal.h>
+   int sigprocmask(int how,  const  sigset_t*set,     
+sigset_t *oldset);
+第一个参数：如何设置
+     SIG_BLOCK:ABC + CDE -> ABCDE(旧+新)
+     SIG_UNBLOCK:ABC - CDE -> AB(旧-新)
+     SIG_SETMASK:ABC CDE -> CDE(直接替换,常用)
+第二个参数：新的信号屏蔽集
+第三个参数：用于带出旧的信号屏蔽集
+返回值：成功返回0，失败返回-1
+函数的功能：主要用于检查和改变信号集
+
+注意：
+   (1)信号屏蔽并不是指删除信号，而是将信号先存起来，等信号屏蔽解除之后还是可以去处理
+   (2)一般信号屏蔽的使用是先设置新的屏蔽字，等处理完毕之后再恢复旧的信号屏蔽字
+
+(2)sigpending函数
+   #include <signal.h>
+   int sigpending(sigset_t *set);
+函数功能：
+    表示获取信号屏蔽期间来过的信号并且放入set中
+
+1.3 信号的处理函数
+   #include <signal.h>
+   int sigaction(int signum, const struct sigaction *act,struct sigaction *oldact);
+第一个参数：信号值/信号名字
+第二个参数：设置信号新的处理方式
+    struct sigaction 
+    {
+       void (*sa_handler)(int);
+     =>signa函数的第二个参数,自定义处理信号
+       void (*sa_sigaction)(int, siginfo_t *, void *);
+     =>自定义处理信号的方式
+       sigset_t sa_mask;
+     =>在信号处理函数执行期间需要屏蔽的信号集
+       int sa_flags;
+     => SA_NODEFER - 解除相同信号的屏蔽
+     => SA_RESETHAND - 指定的信号处理函数执行一次，
+        再来此信号则进行默认处理
+     => SA_SIGINFO - 采用第二个成员处理信号,否则使用第
+        一个成员处理信号
+       void (*sa_restorer)(void);
+     => 保留，不搭理他
+    };
+
+第三个参数：获取旧的处理方式
+返回值：成功返回0，失败返回-1
+函数的功能：检查/改变对信号的处理方式
+
+针对结构体第二个成员的参数解析：
+   siginfo_t 
+   {
+      ...
+      pid_t  si_pid;//发送者的进程号
+      sigval_t si_value;/*发送信号时的附加数据*/
+      ...
+   };
+
+1.4 sigqueue函数
+   #include <signal.h>
+   int sigqueue(pid_t pid,int sig,const union sigval value);
+第一个参数：进程id
+第二个参数：信号值
+第三个参数：附加数据
+   union sigval 
+   {
+       int   sival_int;
+       void *sival_ptr;
+   };
+返回值：成功返回0，失败返回-1
+函数功能：表示向执行的进程发送信号和数据
+
+1.5 定时器
+   unix/linux系统都会为每一个进程维护3个定时器，分别为：真实定时器、虚拟定时器以及使用定时器
+   真实定时器 - 通过定时发送SIGALRM信号进行工作的
+
+   #include <sys/time.h>
+   int getitimer(int which, struct itimerval *curr_value);
+   int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value);
+第一个参数：哪种定时器
+     ITIMER_REAL - 真实定时器
+第二个参数：对于定时器的当前设置信息
+     struct itimerval 
+     {
+        struct timeval it_interval; /*间隔时间*/
+        struct timeval it_value;    /*启动时间*/
+     };
+     struct timeval 
+     {
+        long tv_sec;/*秒数*/
+        long tv_usec;/*微秒数*/
+     };
+第三个参数：获取之前的定时器信息
+函数的功能：用于获取/设置 一个定时器的信息
+
+2.进程间的通信
+2.1 概念
+   两个/多个进程之间数据的交换 叫做进程间的通信
+如：
+   vi A.c    int  a = 10;
+   vi B.c    int* pi = &a;  *pi = 不靠普的
+
+2.2 进程间的通信方式
+   (1)文件
+   (2)信号
+   (3)管道
+   (4)共享内存
+   (5)消息队列(重点)
+   (6)信号量集(与信号无关)
+   (7)网络(重点)
+   ...
+   其中，4、5、6三种通信方式统称 XSI IPC通信方式
+
+3.使用管道进行进程间的通信
+3.1 概念
+   管道本质上就是文件,但是比较特殊，一般叫做管道[文件]
+   管道分为两种：有名管道 ，无名管道
+   	有名管道：可以用于任意两个进程之间的通信
+        无名管道：主要用于父子进程之间的通信
+
+3.2 使用有名管道通信
+   使用mkfifo命令创建管道文件,open函数创建的不好使
+如：
+   mkfifo a.pipe
+   echo hello > a.pipe   
+   cat a.pipe
+
+注意：
+   管道是一种比较特殊的文件，不能存放数据
+
+3.3 使用无名管道通信
+   #include <unistd.h>
+   int pipe(int pipefd[2]);
+函数功能：
+   表示创建一个管道，通过参数带回两个文件描述符，其中pipefd[0]表示读端，pipefd[1]表示写端
+
+4.使用共享内存进行进程间的通信
+4.1 概念
+   让多个进程共享同一块内存空间，让系统内核维护的内存作为媒介来进行通信，最快的IPC通信方式
+
+4.2 通信的步骤
+  (1)获取key值,使用ftok函数
+  (2)使用key值获取共享内存的shmid，使用shmget函数    
+  (3)挂接共享内存，使用shmat函数
+  (4)使用共享内存
+  (5)脱接共享内存，使用shmdt函数
+  (6)如果不再使用，删除共享内存，使用shmctl函数 
+
+4.3 相关函数的解析
+(1)ftok函数
+   #include <sys/types.h>
+   #include <sys/ipc.h>
+   key_t  ftok(const char *pathname,int proj_id);   
+第一个参数：有效的路径
+第二个参数：项目id,非0,关注低8位
+返回值：成功返回有效的key值，失败返回-1
+函数功能：表示根据路径和项目id生成一个key值
+
+注意：
+   对于相同的路径和项目编号，那么生成的key值相同
+
+(2)shmget函数
+   #include <sys/ipc.h>
+   #include <sys/shm.h>
+   int shmget(key_t key, size_t size, int shmflg);
+第一个参数：ftok函数的返回值
+第二个参数：共享内存的大小
+第三个参数：标志
+    IPC_CREAT - 创建
+    IPC_EXCL  - 与创建搭配使用，如果存在则创建失败
+返回值：成功返回有效的shmid,失败返回-1
+函数功能：申请一块共享内存
+
+注意：
+    当创建一块新的共享内存时，需要指定权限,如：0666   
+
+(3)shmat函数
+   #include <sys/types.h>
+   #include <sys/shm.h>
+   void *shmat(int shmid, const void *shmaddr, int shmflg);
+第一个参数：共享内存的id,也就是shmget函数的返回值
+第二个参数：共享内存的地址,给0即可
+第三个参数：共享内存的标志，给0即可
+返回值：成功返回共享内存的挂接地址,失败返回-1
+函数功能：主要用于共享内存的挂接
+
+(4)shmdt函数
+   int shmdt(const void *shmaddr);
+函数的功能：将参数指定的共享内存进行脱接
+
+(5)shmctl函数
+   #include <sys/ipc.h>
+   #include <sys/shm.h>
+   int shmctl(int shmid, int cmd, struct shmid_ds *buf);
+第一个参数：共享内存的id
+第二个参数：具体的操作命令
+     IPC_RMID - 删除
+第三个参数：给NULL即可
+函数的功能：主要用于删除共享内存
+
+4.4 相关的命令
+    ipcs -m  表示查看当前系统中的共享内存
+    ipcrm -m 共享内存id  表示删除指定的共享内存  
+
+明日预报：
+    (1)消息队列
+    (2)银行账户管理系统
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

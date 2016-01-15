@@ -1,0 +1,482 @@
+一 作业
+   找出剩下的17个普通员工
+   select  distinct m.id,m.first_name
+       from  s_emp e,s_emp m
+           where e.manager_id(+)=m.id
+           and  e.manager_id is null; 
+   select  distinct m.id,m.first_name
+       from s_emp m left outer join s_emp e
+           on e.manager_id=m.id
+           where  e.manager_id is null;
+   select  distinct m.id,m.first_name
+       from s_emp m left  join s_emp e
+           on e.manager_id=m.id
+           where  e.manager_id is null;        
+二.full outer join （了解）
+   2.1 概念
+   全外连接的结果集 等于左外连接的结果集
+       加上右外连接的结果集 然后减去重复
+       的记录。
+   2.2 full  outer join 在oracle中如何实现?
+   不是通过两端都加(+) 实现的
+   而是通过 union 实现的
+   union  合并两个结果集然后排重
+   union  all  合并两个结果集 
+   select  id from s_emp  union
+     select id from s_emp;    
+   select  id from s_emp  union all
+     select id from s_emp; 
+三.组函数 
+   3.1 特点
+   无论sql语句影响多少行 只返回一个结果
+   3.2 常见的组函数
+   count(par1)  统计一组数据的个数
+   max(par1)    统计一组数据的最大值
+   min(par1)    统计一组数据的最小值
+   avg(par1)    统计一组数据的平均值
+   sum(par1)    统计一组数据的和
+   3.3 举例
+   统计s_emp 表中的人数 工资的最大值 
+       工资的最小值
+   select  count(id),max(salary),
+       min(salary) from s_emp;    
+   统计s_emp 表中的工资的平均值 和 
+      工资的和。
+   select  avg(salary),sum(salary)
+       from s_emp;   
+   3.4 特殊的用法
+   count 函数中可以使用*
+   select count(*) from s_emp; 
+   组函数中可以使用distinct
+   select  sum(salary),sum(distinct salary)
+       from s_emp;   
+   3.5 组函数对NULL值的处理策略 忽略
+   统计提成的个数 提成的平均值 提成的和
+   commission_pct 
+   select  count(commission_pct),
+       avg(commission_pct),sum(commission_pct)
+       from s_emp;
+ 四.分组
+   4.1 概念
+   按照一定的标准 把数据分成若干部分
+   4.2 语法
+   from 表名
+       where 条件
+           group by 分组标准
+               having  组数据过滤条件
+                   order by 排序标准。
+   4.3 按照部门编号分组 统计每个部门的
+       人数 显示 部门编号 和 人数
+         select dept_id,count(id) 
+           from  s_emp
+             where 1=1
+               group by dept_id;       
+       按照部门编号分组 统计每个部门的
+       人数 显示 部门编号 和 人数
+       只显示人数大于2的部门
+        select dept_id,count(id) ec 
+           from  s_emp
+             where 1=1
+               group by dept_id
+                 having count(id)>2 
+                   order by ec; 
+       from  
+           where 
+               group by 
+                   having
+                      select 
+                          order by    
+                                    
+   4.4 按照部门编号分组 统计每个部门的
+      平均工资 显示部门编号和平均工资
+      并且只显示平均工资大于1500的
+   select  dept_id,avg(salary)
+       from s_emp 
+           where 1=1
+               group  by  dept_id
+                   having avg(salary)>1500;                   
+   4.5 在上面查询的基础上把每个部门编号
+      对应的名字显示出来。                
+   select  dept_id,avg(salary),name
+       from s_emp,s_dept  
+           where dept_id=s_dept.id
+               group  by  dept_id,name
+                   having avg(salary)>1500;                   
+   select  dept_id,avg(salary),max(name)
+       from s_emp,s_dept  
+           where dept_id=s_dept.id
+               group  by  dept_id
+                   having avg(salary)>1500;                   
+   结论:在分组语句中 select后面的字段 
+        要么是分组标准 要么是经过合适的
+        组函数处理过的。
+ 五.子查询
+    5.1 概念
+    把一个查询的结果 作为另一个查询的基础
+    5.2 子查询出现的位置
+    where 之后
+    having 之后
+    from   之后
+    5.3 where 之后
+    /* 找出所有领导的员工编号 */
+    select distinct manager_id from s_emp;
+    /* 如果一个员工的id出现在上面的查询中
+       则这个员工是领导 */
+    select  id,first_name 
+        from s_emp  
+            where id in(select distinct 
+            manager_id from s_emp);       
+    /* 找出不是领导的员工 */
+    select  id,first_name 
+        from s_emp  
+            where id not in(select distinct 
+            manager_id from s_emp
+            where manager_id is not null);
+   5.4 having 之后
+   按照部门号分组 求每个部门的平均工资
+       显示部门编号 和 平均工资,并且要
+       显示平均工资大于41部门平均工资
+       的数据。
+   select  avg(salary) from s_emp 
+       where  dept_id=41;      
+   select  dept_id,avg(salary)
+       from s_emp 
+           group by dept_id
+               having avg(salary)>(select  
+               avg(salary) from s_emp 
+               where  dept_id=41);  
+    5.5 from 之后
+       任何一条合法的select语句 都可以看成
+       一张内存表。
+       select  id,first_name name,salary
+           from s_emp;
+       select id,name from(select  id,
+           first_name name,salary
+           from s_emp) where id>10;     
+select * from(       
+   select  dept_id,avg(salary) asal
+       from s_emp 
+           group by dept_id)where asal>
+           (select  
+            avg(salary) from s_emp 
+            where  dept_id=41);  
+        
+  六.DDL  数据定义语句
+    6.1 创建表
+    create table  表名(
+        字段名1   类型,
+        字段名2   类型,
+        字段名3   类型
+    );
+    练习:
+    创建一张员工表 empn 字段如下
+    id     number
+    name   varchar2(30)
+    salary number(11,2)
+    create  table  emp200(
+        id   number,
+        name  varchar2(30),
+        salary  number(11,2)
+    );
+   6.2 删除表
+   drop  table  表名;
+   drop  table  emp200;  
+   
+   建立一张订单表 ordern
+   ono   varchar2(30) 
+   oname varchar2(30)
+   osalary number
+   odate   date
+   建立订单表时 先删除订单表 ordern
+   drop   table  order200;
+   create table  order200(
+        ono   varchar2(30), 
+        oname varchar2(30),
+        osalary number,
+        odate   date
+   );
+   
+   6.3 修改表(了解)
+   alter  table  order200 
+        drop column  odate;    
+   alter  table  order200
+        add  odate  date;
+   desc  order200;   
+   
+ 七.DML  数据操作语句
+   7.1 增加数据(insert )
+   drop   table  order9527;
+   create table  order9527(
+        ono   varchar2(30), 
+        oname varchar2(30),
+        osalary number,
+        odate   date
+   );
+    insert into 表名 values(值1,值2,值3);
+    commit;
+    insert into order9527 values('test001',
+        'test',18.87,sysdate);
+    commit;     
+    如果有些数据 没有具体的值可以使用
+        NULL替代。
+    insert into order9527 values('test111',
+        'test',NULL,sysdate);
+    commit;    
+    
+    第二种插入数据的语法
+    选择部分字段插入数据 没有被选择的
+        字段值是NULL值。所以必须包含所有
+        的非空字段。
+    insert  into 表名(字段名1,字段名3) 
+         values(值1,值3);
+    commit;
+    insert  into order9527(ono,odate) 
+         values('12345',sysdate);
+    commit;          
+    
+  7.2 删除数据
+  delete  表名  where 条件;
+  delete  order9527  where ono='25';   
+  commit;
+  
+  delete  from order9527 where ono='12345'; 
+  commit;
+  7.3 修改数据 
+  update 表名 set 字段名1=值1,字段名2=值2
+      where 条件;
+  commit;    
+  
+  把order9527  中test001的osalary 
+  修改成1181.85 提交数据
+  update  order9527 set osalary=1181.85
+      where  ono='test001';
+  commit;    
+  
+  7.4 建立一张员工表  empn
+  id   number primary key 
+  name  varchar2(30)
+  salary  number   
+  edate  date
+  建表之前先删除表 
+  把如下数据插入数据表empn中  
+  1  ea   5000  sysdate
+  2  eb   6500  sysdate
+  3  ec   7500  sysdate
+  提交数据 删除 id是2的员工数据 提交数据
+  最后给 id=3的人涨工资 涨40% 提交数据
+  
+  drop  table  emp1412;
+  create table emp1412(
+      id   number  primary key,
+      name varchar2(30),
+      salary  number,
+      edate   date
+  );
+  insert into emp1412 values
+      (1,'ea',5000,sysdate);
+  insert into emp1412 values
+      (2,'eb',6500,sysdate);
+  insert into emp1412 values
+      (3,'ec',7500,sysdate);
+  commit;
+  delete  from emp1412  where id=2;
+  commit;
+  update  emp1412  set salary=salary*1.4
+      where  id=3;
+  commit;
+               
+ 八.日期类型的相关操作
+    8.1 日期类型默认以 DD-MON-YY
+    为了按照指定格式显示数据 需要使用
+    to_char(par1,par2)
+        par1是要处理的日期数据
+        par2 日期格式字符串
+        yyyy  四位年
+        mm    两位月
+        dd    两位天
+        
+        hh    12 小时制
+        hh24  24 小时制
+        mi    分钟
+        ss    秒 
+        
+        pm    表达上午 am 下午 pm
+        day   星期几
+        month 月的全写 
+   select  id,to_char(edate,
+       'yyyy-mm-dd hh24:mi:ss day') 
+       from  emp1412;     
+   8.2 插入一条数据 
+   5   ee   7000   2015-06-08
+   insert  into  emp1412 
+       values(5,'ee',7000,'08-JUN-15');
+   写起来 不能按照自己习惯
+   时分秒 都是零          
+   select  id,to_char(edate,
+       'yyyy-mm-dd hh24:mi:ss day') 
+       from  emp1412 where id=5;        
+   2015-06-08  09:30:18 
+   to_date('日期字符串','日期格式')     
+   insert  into  emp1412 
+       values(6,'ef',8000,
+       to_date('2015-06-08  09:30:18'
+       ,'yyyy-mm-dd hh24:mi:ss'));      
+   select  id,to_char(edate,
+       'yyyy-mm-dd hh24:mi:ss day') 
+       from  emp1412 where id=6;     
+   2008-08-08 20:08:08 
+   2012-12-21 23:59:59 
+  
+  8.3 日期的调整
+   加一个整数n 代表n天
+   select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(sysdate+2,
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;
+   select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(sysdate+1/24,
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;     
+   select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(sysdate-1/(24*60*60),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual; 
+  8.4 特殊的调整
+     按照月为单位调整
+     add_months(par1,par2)
+   select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(add_months(sysdate,-3),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual; 
+     last_day(par1) 求一个日期对应的月的
+         最后一天的时间点
+    select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(last_day(sysdate),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;    
+     next_day(par1,par2) 求下一个星期几
+     select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(next_day(sysdate,'monday'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;   
+     select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(next_day(sysdate,'friday'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;   
+  8.5 日期的四舍五入 和 截取 
+      round(par1,par2)  
+        par1 要处理的日期
+        par2 处理的精度 默认是天 可以指定
+    select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(round(sysdate,'hh'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;    
+    select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(round(sysdate,'mm'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;        
+    trunc(par1,par2)  
+        par1 要截取的日期
+        par2 截取的精度 默认是天 可以指定 
+    select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(trunc(sysdate,'hh'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual;    
+    select  to_char(sysdate,
+       'yyyy-mm-dd hh24:mi:ss'),
+       to_char(trunc(sysdate,'yy'),
+       'yyyy-mm-dd hh24:mi:ss')
+       from dual; 
+  8.6 给定一个日期字符串如
+    '2008-08-08 20:08:08' 把这个日期
+    对应的月的最后一天的最后一秒显示
+    出来 按照yyyy-mm-dd hh24:mi:ss 
+    格式显示。
+    2008-08-31 23:59:59 
+    select  to_char(
+    trunc(
+    last_day(
+    to_date('2008-08-08 20:08:08',
+       'yyyy-mm-dd hh24:mi:ss')))
+       +1-1/(24*60*60),
+    'yyyy-mm-dd hh24:mi:ss') from dual;
+   
+   select to_char( 
+      add_months(
+      trunc(
+      to_date('2008-08-08 20:08:08',
+      'yyyy-mm-dd hh24:mi:ss'),'mm'),1)
+      -1/(24*60*60),
+      'yyyy-mm-dd hh24:mi:ss') from dual;
+      
+九.事务控制语句 TCL
+   9.1概念  transaction
+   在编程中 经常把一组逻辑相关的语句 看成
+       一个整体,这些语句需要一起成功 或者
+       一起失败。
+   9.2 举例
+   转账：
+       update  account 
+         set money=money-20000 where id='A';
+       fa
+       update  account 
+         set money=money+20000 where id='B';
+       fb
+   9.3 事务的四大特性
+      原子性:事务中的语句 是一个不可分割
+          的整体。
+      一致性:
+          事务中的语句 要么一起成功 要么
+          一起失败。
+          if(fa==0 && fb==0){
+             //提交数据
+          }else{
+             //回滚
+          }        
+      隔离性:
+          一个事务的操作 在没有提交以前
+              数据的变化 对另外一个事务
+              而言是不可见的。
+      持久性:
+                   
+   事务操作 只针对DML(insert delete 
+       update)有效        
+                    
+  9.4 保存点 savepoint (了解)
+    允许部分成功 部分失败
+    操作1
+    savepoint  a;
+    操作2
+    savepoint  b;
+    操作3
+    savepoint  c;
+    操作4;
+    rollback to b;
+    commit; 
+ 
+    insert  into order9527 values
+       ('t1','t1',123,sysdate);
+    savepoint a;
+    insert  into order9527 values
+       ('t2','t2',124,sysdate); 
+    savepoint b;     
+    insert  into order9527 values
+       ('t3','t3',125,sysdate); 
+    rollback to b;
+    commit;  
+      
+     
+      
+   
+              
+                   

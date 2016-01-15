@@ -1,0 +1,57 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: Exam - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Debug/Exam.res" /d "_DEBUG" /d "_AFXDLL" "C:\Documents and Settings\Administrator\桌面\Exam\Exam.rc"" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP176.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/Exam.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Documents and Settings\Administrator\桌面\Exam\ChildView.cpp"
+"C:\Documents and Settings\Administrator\桌面\Exam\Exam.cpp"
+"C:\Documents and Settings\Administrator\桌面\Exam\MainFrm.cpp"
+"C:\Documents and Settings\Administrator\桌面\Exam\MyFormView.cpp"
+"C:\Documents and Settings\Administrator\桌面\Exam\MyListView.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP176.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP177.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/Exam.pch" /Yc"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\Documents and Settings\Administrator\桌面\Exam\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP177.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP178.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/Exam.pdb" /debug /machine:I386 /out:"Debug/Exam.exe" /pdbtype:sept 
+".\Debug\ChildView.obj"
+".\Debug\Exam.obj"
+".\Debug\MainFrm.obj"
+".\Debug\MyFormView.obj"
+".\Debug\MyListView.obj"
+".\Debug\StdAfx.obj"
+".\Debug\Exam.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP178.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+ChildView.cpp
+Exam.cpp
+MainFrm.cpp
+MyFormView.cpp
+MyListView.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+Exam.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

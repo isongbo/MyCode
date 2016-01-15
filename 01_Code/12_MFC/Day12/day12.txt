@@ -1,0 +1,81 @@
+一 MFC的列表控件
+   1 相关类
+   CListCtrl类-父类是CWnd类，是一个控件，常在
+   对话框程序中使用。提供了对列表控件的操作的
+   所有功能。
+   CListView类-父类是CCtrlView类是一个视图，常在
+   文档视图程序中使用。通过调用GetListCtrl函数得到
+   视图包含的控件。
+   2 CListCtrl类的使用
+   2.1 设置控件的图标列表
+   2.1.1 在位图中绘制图标列表
+   2.1.2 在对话框中添加两个成员变量
+         CImageList m_ilNormal;
+         CImageList m_ilSmall;
+   2.1.3 创建图标列表
+         BOOL Create(
+         UINT nBitmapID,//位图ID 
+         int cx, //每个图标在位图中的宽度
+         int nGrow,//自动增长值 
+         COLORREF crMask//遮挡色
+         );
+   2.2 添加列
+       CListCtrl::InsertColumn
+   2.3 添加选项
+       CListCtrl::InsertItem
+   2.4 设置各列的文本
+       CListCtrl::SetItemText
+       
+   2.5 修改控件的显示风格
+       CWnd::ModifyStyle
+   2.6 引入CStringList类用来保存文件路径
+   2.6.1 清空链表
+       CStringList::RemoveAll
+   2.6.2 在链表末尾添加字符串
+       CStringList::AddTail
+   2.6.3 根据索引得到位置
+       CStringList::FindIndex
+   2.6.4 根据位置得到字符串
+       CStringList::GetAt
+   2.7 设置/获取选项的附加数据
+       CListCtrl::SetItemData/GetItemData
+   2.8 设置控件的背景图片
+       2.8.1 初始化Ole库
+       AfxOleInit();
+       2.8.2 设置控件的背景图片
+       CListCtrl::SetBkImage
+       2.8.3 设置字体的背景色透明
+       CListCtrl::SetTextBkColor(CLR_NONE)
+       
+   ...
+         
+二 MFC的树控件
+1 相关类
+  CTreeCtrl类-父类是CWnd类，是控件类。常用于对话框
+              程序中。
+  CTreeView类-父类是CCtrlView类，是视图类。常用于
+  文档视图应用程序中。通过调用GetTreeCtrl()函数
+  得到相关CTreeCtrl控件。
+2 CTreeCtrl类的使用
+  2.1 插入节点
+  HTREEITEM InsertItem( 
+   LPCTSTR lpszItem,//节点文本 
+   int nImage, //图标索引
+   int nSelectedImage,//节点被选中时的图标 
+   HTREEITEM hParent = TVI_ROOT, /*如果使用默认值，插入的节点是根节点。
+                                   如果插入的节点不是根节点，该参数表示父节点*/
+   HTREEITEM hInsertAfter = TVI_LAST/*如果使用默认值，表示在末尾增加节点。
+                                     如果希望在某个节点之后，参数表示这个节点句柄*/
+  );     
+  2.2 设置节点的高度
+  CTreeCtrl::SetItemHeight
+  2.3 设置节点的展开状态
+  CTreeCtrl::Expand
+  2.4 获取当前选中节点
+  CTreeCtrl::GetSeletedItem
+  2.5 删除节点
+  CTreeCtrl::DeleteItem
+  2.6 设置节点文本
+  CTreeCtrl::SetItemText
+  ...
+  

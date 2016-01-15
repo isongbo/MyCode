@@ -1,0 +1,73 @@
+一 MFC线程
+   1 分类
+   根据不同的用途，分工作者线程和用户界面线程。
+   工作者线程-没有单独的用户界面，只是在后台完成耗时的操作
+   用户界面线程-拥有自己的用户界面，可以与用户交互。
+   2 工作者线程的使用
+   2.1 定义线程函数，函数原型：
+       UINT MyControllingFunction( LPVOID pParam );
+   2.2 创建和启动工作者线程
+       AfxBeginThread
+   3 用户界面线程的使用
+   3.1 添加CWinThread类的派生类CMyThread类
+   3.2 在CMyThread::InitInstance函数中创建子线程用户界面
+   3.3 创建和启动用户界面线程
+       AfxBeginThread
+
+MFC课程的第二部分 COM组件的应用
+二 COM组件的应用(ActiveX控件)
+1 相关概念
+1.1 ActiveX控件的概念
+  基于COM组件技术的控件，可以被多种不同语言开发的程序使用。
+1.2 COM组件技术的概念
+  是一个个小的二进制模块(*.dll/*.exe)，以接口的方式对外提  供服务。COM组件技术的提出，极大的改善了项目的组成结构，
+  使得项目更好的适应用户的需求变更。
+1.3 COM接口的概念
+  COM接口是纯虚函数的集合。
+  virtual void Sort(int arr[])=0; 
+
+2 使用MFC的向导创建ActiveX控件项目
+2.1 接口和类的介绍
+   第一个接口-为控件添加属性和方法
+   第二个接口-为控件添加事件
+   App类-应用程序类
+   Ctrl类-控件的实现类，绘制控件的外观，实现控件的各种功能
+   PropPage类-实现控件的属性
+2.2 在Ctrl类的OnDraw()函数中绘制控件的外观
+2.3 通过第一接口添加方法，并在Ctrl类中实现该方法。
+2.4 通过第一个接口添加属性，并在Ctrl类中实现
+2.5 通过第二接口添加事件。
+    库存事件和用户自定义事件，用户自定义事件，用户必须手动
+    的通知何时触发事件，通过调用FireXXX函数通知。
+3 ActiveX控件的注册
+  微软提供了regsvr32.exe工具帮助我们注册COM组件和ActiveX
+  控件。
+  在运行框中输入：
+  regsvr32  /u  "组件的文件路径" 卸载/注册组件
+
+4 在ActiveX Control Test Container中测试控件
+5 ActiveX控件的使用
+5.1 在MFC窗口程序中使用
+       
+5.2 在Web页面中使用
+ 
+WTL-Windows Template Library，类似MFC，是一个轻量级的UI框架
+ADO-是一个访问数据的控件，基于COM组件的。
+ 
+
+  
+    
+   
+ 
+  
+ 
+
+   
+      
+
+
+
+
+
+
+

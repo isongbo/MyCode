@@ -1,0 +1,84 @@
+﻿一.proc简介
+    1.1 什么是pro程序
+    通过在过程化 编程语言中嵌入sql语句开发出的应用程序
+           叫pro程序。
+    宿主语言:sql语句所嵌入的语言
+    1.2 为什么要有proc
+    让c或者c++ 这种高效的语言成为 访问oracle的工具
+二.开发 运行一个c程序的步骤?
+    1.编写源代码
+       vi      ***.c
+    2.编译 
+       gcc   -c    ***.c  
+    3.链接
+       gcc    ***.o    -l库名
+    4.运行
+       ./a.out 
+三.如何开发运行一个proc程序
+    1.编写源代码 
+     vi     ***.pc 
+    2.预编译 把pc文件 转换成c文件 
+     proc    ***.pc 
+    3.编译 链接
+     gcc     ***.c      -lclntsh      (linux/unix ) 
+     gcc     ***.c      -lorasql10  -L库的位置 (windows)
+    4.执行 
+     ./a.out 
+四.写自己的c程序  连接oracle数据库  然后把s_emp 表中
+    id=1的first_name 查询出来 并使用c输出到屏幕。
+    总结:
+    和c程序相同的部分:
+    导入头文件 
+    定义变量 
+    声明函数
+    实现函数
+    使用库函数
+    和c程序不同的部分:
+    文件的后缀是 .pc 文件 
+    /* 包含一个数据结构叫sqlca */
+    exec sql  include sqlca;
+    /* 连接数据库 */
+    exec sql  connect:变量;  -----> sqlplus  openlab/open123
+    exec sql  connect:用户名变量  identified by :密码变量;
+    /* 查询数据库 */
+    exec sql select  字段名 into :变量名 
+           from  表名  where 条件;
+    /* 断开数据库连接 */
+    exec sql commit  work release;
+    exec sql rollback  work release;        
+五.宿主变量 
+    5.1 特点
+    既能在sql语句中 使用 又能在宿主语言中使用的变量。
+    5.2 宿主变量的类型 
+    char       字符类型
+    char       var[n]    定长字符串
+    short     
+    int   
+    long 
+    float 
+    double 
+    varchar     var[n]    变长字符串 
+    5.3 定长字符串  和  变长字符串
+         5.3.1 定长字符串
+         char    var_name[30]; 
+         5.3.2 变长字符串 
+         把char 类型 变成 varchar
+         在sql语句中 要和char的变量一样去使用 
+         在宿主语言中 要使用变量名.arr 来获取数据 
+         注意垃圾值问题 
+                varchar  var_name[30]={0};
+                变量名.len  可以获取数据的长度
+                var_name.arrr[var_name.len]='\0';
+
+
+
+
+
+
+
+
+
+
+
+
+      

@@ -1,0 +1,245 @@
+复习：
+1.中断的概念和分类
+   中断：中止当前正在运行的进程，转而去执行新的进程/处理意外情况
+   分类：硬件中断和软件中断   
+
+2.信号的概念和使用
+2.1 概念
+   信号本质就是软中断,信号主要用于处理一些意外情况,
+进程既可以发送信号，还可以处理信号   
+   使用kill -l命令查看当前系统支持的信号,对于linux系统来说，一般支持的信号1～64,unix系统一般支持1~48
+如：
+   ctr+c  SIGINT  2
+   ctrl+\  SIGQUIT 3
+   kill -9 SIGKILL 9
+
+   对于linux系统支持 1 ~ 64之间的信号,其中1 ~ 31之间的信号叫做不可靠信号，不支持排队，信号可能丢失,也叫做非实时信号;34~64之间的信号叫做可靠信号，支持排队，信号不会丢失,也叫做实时信号
+
+2.2 信号的处理方式
+(1)默认处理，绝大多数信号都是终止进程
+(2)忽略处理
+(3)自定义处理(捕获处理),通过自定义函数进行处理的
+
+注意：
+   信号9只能进行默认出来,不能自定义/忽略
+
+2.3 信号处理函数
+   signal() - 设置信号的处理方式
+
+2.4 父子进程对信号的处理方式比较
+  (1)对fork创建的子进程来说,完全照搬父进程对信号的处理方式
+  (2)对于vfork+execl()搭配创建的子进程来说,父进程默认,子进程也默认;父进程忽略,子进程也忽略;父进程自定义,子进程也默认;
+
+2.5 信号的发送方式
+(1)采用键盘发送信号(只能发送部分特殊的信号)
+   ctrl+c  SIGINT 2
+   ...
+(2)程序出错(只能发送部分特殊的信号)
+   段错误  SIGSEGV 11
+   ...
+(3)使用kill -信号值 进程号 => 发送所有的信号
+(4)采用系统函数发送信号
+   raise()/kill()/alarm()/sigqueue()
+
+2.6 采用系统函数发送信号
+   raise() - 表示给调用者发送指定的信号
+   kill() - 表示给指定的进程发送指定的信号
+   alarm() - 表示给调用进程/线程发送SIGALRM信号
+
+2.7 信号集
+(1)概念
+   数据类型 sigset_t ; 本质是结构体; 128
+(2)基本操作
+   sigemptyset() - 清空信号集
+   sigfillset() - 填满信号集
+   sigaddset() - 添加指定的信号到信号集
+   sigdelset() - 删除指定的信号
+   sigismember() - 判断信号是否存在
+-------------------------------------------------------
+今天内容：
+   (1)信号的处理
+   (2)进程间的通信方式
+
+1.信号的处理
+1.1 信号的屏蔽
+(1)概念
+   程序在执行某些关键性的功能时，可能不允许被中断,这个时候需要对信号设置屏蔽的处理
+
+(2)sigprocmask函数
+   #include <signal.h>
+   int sigprocmask(int how,const sigset_t *set, sigset_t *oldset);
+第一个参数：设置方式
+    SIG_BLOCK - 旧+新 ABC+CDE => ABCDE
+    SIG_UNBLOCK - 旧-新 ABC-CDE => AB
+    SIG_SETMASK - 旧->新 ABC CDE => CDE(掌握)
+第二个参数：传入新的信号集
+第三个参数：带出旧的信号集
+函数功能：表示根据参数设置新的信号屏蔽字
+
+(3)sigpending函数
+   #include <signal.h>
+   int sigpending(sigset_t *set);
+函数功能：
+   表示获取信号屏蔽期间来过的信号，通过参数set带出去
+
+注意：
+   (1)信号屏蔽并不是将信号删除，而是暂时存起来，等信号屏蔽解除之后还是可以处理的
+   (2)设置新的信号屏蔽使用完毕后，尽量恢复原来默认的信号屏蔽字
+
+1.2 sigaction函数 - signal函数的增强版
+   #include <signal.h>
+   int sigaction(int signum, const struct sigaction *act,struct sigaction *oldact);
+第一个参数：信号名称/信号值
+第二个参数：针对信号新的处理方式
+struct sigaction 
+{
+   void (*sa_handler)(int);
+=> 函数指针类型
+=> 设置对信号的处理方式
+
+   void (*sa_sigaction)(int, siginfo_t *, void *);
+=> 函数指针类型
+=> 设置对信号的处理方式,理解为上述函数指针的增强版
+
+   sigset_t   sa_mask;
+=> 信号屏蔽字,信号集类型，支持多个信号的屏蔽
+=> 主要设置在信号处理期间需要屏蔽的信号,
+   默认自动屏蔽与所处理的信号相同的信号
+
+   int  sa_flags;
+=> SA_SIGINFO 表示选择第二个函数指针处理信号
+=> SA_NODEFER 表示解除对所处理信号相同信号的屏蔽
+=> SA_RESETHAND 表示信号第二次到来采用默认处理
+
+   void     (*sa_restorer)(void);
+=> 函数指针类型，保留，暂时不使用
+};
+
+第三个参数：带出信号旧的处理方式
+函数功能：设置对指定信号的处理方式
+
+针对结构体中sa_sigaction这个函数指针的第二个参数来说：
+  siginfo_t 
+  {
+     pid_t  si_pid; //发送信号的进程号
+     sigval_t si_value;//发送信号伴随的附加数据
+  };
+
+1.3 sigqueue函数
+   #include <signal.h>
+   int sigqueue(pid_t pid,int sig,const union sigval value);
+第一个参数：接受信号的进程号
+第二个参数：发送的信号值/信号名称
+第三个参数：发送的附加数据
+   union sigval 
+   {
+       int   sival_int;
+       void *sival_ptr;
+   };
+
+函数功能：表示向指定的进程发送指定的信号，并且附加数据
+
+1.4 计时器
+(1)概念   
+   一般来说,unix/linux系统会为每一个进程维护三种计时器：真实计时器,虚拟计时器,实用计时器
+   真实计时器：主要描述进程真正的运行时间(掌握)
+   虚拟计时器：主要描述进程在用户态花费的时间
+   实用计时器：主要描述进程在内核态和用户态下花费时间
+
+(2)基本操作
+    #include <sys/time.h>
+    int getitimer(int which, struct itimerval *curr_value);
+    int setitimer(int which, const struct itimerval *new_value,struct itimerval *old_value);
+第一个参数：计时器的类型，体现哪一个的意思
+    ITIMER_REAL - 真实计时器，通过产生SIGALRM信号工作
+    (掌握)
+    ITIMER_VIRTUAL - 虚拟计时器，通过产生SIGVTALRM信号
+    ITIMER_PROT - 实用计时器，通过产生SIGPROF信号
+
+第二个参数：设置计时器的新值
+    struct itimerval 
+    {
+       struct timeval it_interval; /*间隔时间*/
+       struct timeval it_value;    /*启动时间*/
+    };
+    struct timeval 
+    {
+       long tv_sec;/* 秒数 */
+       long tv_usec;/* 微秒 */
+    };
+
+第三个参数：主要用于带出计时器原来的值
+函数功能：获取/设置 计时器的相关参数
+
+2.进程间的通信
+2.1 概念
+   两个进程/多个进程之间的数据交互,叫做进程间的通信
+2.2 进程间的通信方式
+如：
+   vi a.c  int x = 10; while(1);
+   vi b.c  int* pi = &x;printf("*pi = %d\n",*pi); error
+(1)文件
+(2)信号      
+(3)管道
+(4)共享内存
+(5)消息队列(重点) 
+(6)信号量集
+(7)Socket通信(重点)
+...
+   其中(4)(5)(6)统称为XSI IPC通信方式
+
+3.使用管道进行进程间的通信
+3.1 概念
+  管道本质还是文件,是一种比较特殊的文件,古老的通信方式
+  管道分为：有名管道 和 无名管道
+  有名管道 - 主要用于任意两个进程之间的通信
+  无名管道 - 主要用于父子进程之间的通信
+
+3.2 使用有名管道进行通信
+  使用命令mkfifo xxx.pipe来创建管道文件xxx.pipe
+
+注意：
+   管道文件本身不存储任何数据,只是作为进程间通信的桥梁
+
+3.3 使用无名管道进行通信
+   #include <unistd.h>
+   int pipe(int pipefd[2]);
+函数功能：
+   表示用于创建无名管道，通过参数返回两个文件描述符，其中pipefd[0]关联的是读端，pipefd[1]关联的是写端，通过这两个文件描述符进行读写，从而实现进程间通信
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
+
+
+
+
+
+
+
+
+
